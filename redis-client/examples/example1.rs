@@ -1,13 +1,18 @@
 use redis_client::RedisHash;
+use serde::{Deserialize, Serialize};
 use tokio::main;
 
 #[derive(Debug)]
-enum Fields {
+enum Tags {
     Field1,
-    Field2,
 }
 
-impl std::fmt::Display for Fields {
+#[derive(Debug, Deserialize, PartialEq, Serialize)]
+struct SimpleValue<T> {
+    value: T,
+}
+
+impl std::fmt::Display for Tags {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{:?}", self)
     }
@@ -19,8 +24,11 @@ async fn main() {
         .await
         .expect("Соединение не создано");
 
-    hash.set(&Fields::Field1.to_string(), 10).await.unwrap();
-    let read_field: u32 = hash.get("example_1_field").await.unwrap();
+    let value = SimpleValue { value: 10 };
 
-    assert_eq!(read_field, 10);
+    hash.set(&Tags::Field1.to_string(), &value).await.unwrap();
+    let read_field: SimpleValue<i32> =
+        hash.get(&Tags::Field1.to_string()).await.unwrap();
+
+    assert_eq!(read_field, value);
 }

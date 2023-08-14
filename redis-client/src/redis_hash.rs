@@ -1,5 +1,7 @@
 use redis::aio::Connection;
-use redis::{AsyncCommands, FromRedisValue, ToRedisArgs};
+use redis::AsyncCommands;
+use serde::{de::DeserializeOwned, Serialize};
+use serde_json::{from_str as deserialize, to_string as serialize};
 
 use crate::errors::Errors;
 
@@ -20,9 +22,15 @@ impl RedisHash {
 
     pub async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
     where
-        V: ToRedisArgs + Send + Sync,
+        V: Serialize,
     {
-        self.connection.hset(&self.hash_key, field, value).await?;
+        let json = match serialize(&value) {
+            Ok(value) => value,
+            Err(error) => {
+                return Err(Errors::SerializeError(error.to_string()))
+            }
+        };
+        self.connection.hset(&self.hash_key, field, json).await?;
         Ok(())
     }
 
@@ -31,11 +39,12 @@ impl RedisHash {
     /// kind() == TypeError
     pub async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
     where
-        V: FromRedisValue + Send + Sync,
+        V: DeserializeOwned,
     {
-        let value = self.connection.hget(&self.hash_key, field).await;
-        match value {
-            Ok(result) => Ok(result),
+        let json: Result<String, redis::RedisError> =
+            self.connection.hget(&self.hash_key, field).await;
+        let json = match json {
+            Ok(value) => value,
             Err(error) => match error.kind() {
                 redis::ErrorKind::TypeError => {
                     return Err(Errors::FieldNotFoundError(error.to_string()))
@@ -44,6 +53,10 @@ impl RedisHash {
                     return Err(Errors::RedisConnectionError(error.to_string()))
                 }
             },
+        };
+        match deserialize::<V>(&json) {
+            Ok(value) => Ok(value),
+            Err(error) => Err(Errors::DeserializeError(error.to_string())),
         }
     }
 }
@@ -52,6 +65,7 @@ impl RedisHash {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use serde::Deserialize;
 
     async fn create_connection() -> RedisHash {
         RedisHash::new("redis://127.0.0.1/", "test_hash")
@@ -62,12 +76,7 @@ mod tests {
     /// Функция устанавливает, считывает, и проверяет результат
     async fn set_and_get<V>(hash: &mut RedisHash, field: &str, value: V)
     where
-        V: ToRedisArgs
-            + FromRedisValue
-            + Send
-            + Sync
-            + PartialEq
-            + std::fmt::Debug,
+        V: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug,
     {
         hash.set(field, value).await.unwrap();
         let get_value: V = hash.get(field).await.unwrap();
@@ -90,6 +99,36 @@ mod tests {
         set_and_get(&mut hash, "int_field", -10).await;
         set_and_get(&mut hash, "float_field", -1.23456).await;
         set_and_get(&mut hash, "bool_field", true).await;
+    }
+
+    /// Записываем и читаем структуру
+    #[tokio::test]
+    async fn set_get_struct() {
+        #[derive(Serialize, PartialEq, Deserialize, Debug)]
+        struct ChildStruct {
+            memeber_in_child: String,
+        }
+
+        #[derive(Serialize, PartialEq, Deserialize, Debug)]
+        struct TestStruct {
+            member_str: String,
+            member_int: i32,
+            member_float: f64,
+            member_bool: bool,
+            child: ChildStruct,
+        }
+
+        let item1 = TestStruct {
+            member_str: "member 1 value".to_string(),
+            member_int: -77,
+            member_float: -1.2345,
+            member_bool: true,
+            child: ChildStruct {
+                memeber_in_child: "child field".to_string(),
+            },
+        };
+        let mut hash = create_connection().await;
+        set_and_get(&mut hash, "struct", item1).await;
     }
 
     /// Читаем из несуществующего хеша

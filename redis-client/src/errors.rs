@@ -5,6 +5,10 @@ pub enum Errors {
     RedisConnectionError(String),
     /// Поле не найдено в хеше
     FieldNotFoundError(String),
+    /// Ошибка сериализации
+    SerializeError(String),
+    /// Ошибка десериализации
+    DeserializeError(String),
 }
 
 impl From<RedisError> for Errors {
