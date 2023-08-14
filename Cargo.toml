@@ -1,0 +1,7 @@
+[workspace]
+members = ["redis-client"]
+
+
+[workspace.dependencies]
+redis = { version = "0.23.2", features = ["tokio-comp"] }
+tokio = { version = "1", features = ["full"] }
