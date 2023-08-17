@@ -1,5 +1,5 @@
 [workspace]
-members = ["opcua-client", "redis-client"]
+members = ["messages", "opcua-client", "redis-client"]
 
 
 [workspace.dependencies]

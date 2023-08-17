@@ -2,8 +2,16 @@
 //     ClientBuilder, EndpointDescription, IdentityToken, MessageSecurityMode,
 //     UserTokenPolicy,
 // };
-use opcua::client::prelude::*;
 
+use std::sync::Arc;
+
+use opcua::client::prelude::*;
+use opcua::sync::RwLock;
+use tokio::main;
+
+use messages::{Messages, SimpleValue};
+
+// #[main]
 fn main() {
     let mut client = ClientBuilder::new()
         .application_name("My First Client")
@@ -26,15 +34,13 @@ fn main() {
         .connect_to_endpoint(endpoint, IdentityToken::Anonymous)
         .unwrap();
     subscribe(session.clone()).unwrap();
-    let _ = Session::run(session);
+    let session_tx = Session::run_async(session);
 }
-use opcua::sync::RwLock;
-use std::sync::Arc;
+
 fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
-    let session = session.read();
-    // Creates a subscription with a data change callback
+    let session = session.write();
     let subscription_id = session.create_subscription(
-        2000.0,
+        1000.0,
         10,
         30,
         0,
@@ -62,15 +68,24 @@ fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
 }
 
 fn process_item(item: &MonitoredItem) {
-    let value = item.last_value().value.as_ref().unwrap();
-    println!("{:?}", value);
-    match value {
+    match item.id() {
+        1 => {
+            let value = item.last_value().value.as_ref().unwrap();
+            let value = convert_opc_i16(value);
+            println!("{:?}", value);
+        }
+        _ => (),
+    }
+}
+
+fn convert_opc_i16(opc: &Variant) -> i16 {
+    match opc {
         Variant::Empty => todo!(),
         Variant::Boolean(_) => todo!(),
         Variant::SByte(_) => todo!(),
         Variant::Byte(_) => todo!(),
-        Variant::Int16(_) => todo!(),
-        Variant::UInt16(_) => todo!(),
+        Variant::Int16(value) => *value,
+        Variant::UInt16(value) => *value as i16,
         Variant::Int32(_) => todo!(),
         Variant::UInt32(_) => todo!(),
         Variant::Int64(_) => todo!(),
@@ -92,5 +107,26 @@ fn process_item(item: &MonitoredItem) {
         Variant::DataValue(_) => todo!(),
         Variant::Diagnostics(_) => todo!(),
         Variant::Array(_) => todo!(),
-    };
+    }
+}
+
+// fn main1() {
+//     let test_arr = Messages::Msg2(SimpleValue { value: 32f64 });
+
+//     let str = serde_json::to_string(&test_arr).unwrap();
+
+//     let deser: Messages = serde_json::from_str(&str).unwrap();
+
+//     match &deser {
+//         Messages::IntValueFromOpcUa(value) => println!("{}", value.value),
+//     }
+
+//     println!("{:?}", str);
+//     println!("{:?}", deser);
+// }
+
+use std::time::Duration;
+
+async fn test_async() {
+    std::thread::sleep(Duration::from_millis(2000));
 }

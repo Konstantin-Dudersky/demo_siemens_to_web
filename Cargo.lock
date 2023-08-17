@@ -433,6 +433,13 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2dffe52ecf27772e601905b7522cb4ef790d2cc203488bbd0e2fe85fcb74566d"
 
 [[package]]
+name = "messages"
+version = "0.1.0"
+dependencies = [
+ "serde",
+]
+
+[[package]]
 name = "miniz_oxide"
 version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -523,7 +530,11 @@ dependencies = [
 name = "opcua-client"
 version = "0.0.1"
 dependencies = [
+ "messages",
  "opcua",
+ "serde",
+ "serde_json",
+ "tokio",
 ]
 
 [[package]]

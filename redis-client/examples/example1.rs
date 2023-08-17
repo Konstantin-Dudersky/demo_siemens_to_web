@@ -1,4 +1,4 @@
-use redis_client::RedisHash;
+use redis_client::RedisHashAsync;
 use serde::{Deserialize, Serialize};
 use tokio::main;
 
@@ -20,7 +20,7 @@ impl std::fmt::Display for Tags {
 
 #[main]
 async fn main() {
-    let mut hash = RedisHash::new("redis://127.0.0.1/", "test_hash")
+    let mut hash = RedisHashAsync::new("redis://127.0.0.1/", "test_hash")
         .await
         .expect("Соединение не создано");
 
