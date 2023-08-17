@@ -8,6 +8,5 @@ edition = "2021"
 opcua.workspace = true
 serde.workspace = true
 serde_json.workspace = true
-tokio.workspace = true
 
 messages = { path = "../messages" }

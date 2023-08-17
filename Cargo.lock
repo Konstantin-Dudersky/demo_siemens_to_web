@@ -534,7 +534,6 @@ dependencies = [
  "opcua",
  "serde",
  "serde_json",
- "tokio",
 ]
 
 [[package]]
