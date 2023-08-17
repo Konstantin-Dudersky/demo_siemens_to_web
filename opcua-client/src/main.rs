@@ -7,11 +7,9 @@ use std::sync::Arc;
 
 use opcua::client::prelude::*;
 use opcua::sync::RwLock;
-use tokio::main;
 
 use messages::{Messages, SimpleValue};
 
-// #[main]
 fn main() {
     let mut client = ClientBuilder::new()
         .application_name("My First Client")
@@ -34,7 +32,7 @@ fn main() {
         .connect_to_endpoint(endpoint, IdentityToken::Anonymous)
         .unwrap();
     subscribe(session.clone()).unwrap();
-    let session_tx = Session::run_async(session);
+    let _ = Session::run(session);
 }
 
 fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
