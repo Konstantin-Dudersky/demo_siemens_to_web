@@ -10,3 +10,4 @@ serde.workspace = true
 serde_json.workspace = true
 
 messages = { path = "../messages" }
+redis-client = { path = "../redis-client" }

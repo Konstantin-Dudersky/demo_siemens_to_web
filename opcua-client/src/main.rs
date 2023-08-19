@@ -4,11 +4,13 @@
 // };
 
 use std::sync::Arc;
+use std::time::Duration;
 
 use opcua::client::prelude::*;
 use opcua::sync::RwLock;
 
 use messages::{Messages, SimpleValue};
+use redis_client::RedisHashSync;
 
 fn main() {
     let mut client = ClientBuilder::new()
@@ -31,8 +33,11 @@ fn main() {
     let session = client
         .connect_to_endpoint(endpoint, IdentityToken::Anonymous)
         .unwrap();
-    subscribe(session.clone()).unwrap();
-    let _ = Session::run(session);
+    let _ = Session::run_async(session.clone());
+    subscribe(session).unwrap();
+    loop {
+        std::thread::sleep(Duration::from_millis(2000));
+    }
 }
 
 fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
@@ -44,11 +49,12 @@ fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
         0,
         0,
         true,
-        DataChangeCallback::new(|changed_monitored_items| {
-            println!("Data change from server:");
+        DataChangeCallback::new(move |changed_monitored_items| {
+            let mut redis_hash =
+                RedisHashSync::new("redis://127.0.0.1/", "opcua").unwrap();
             changed_monitored_items
                 .iter()
-                .for_each(|item| process_item(item));
+                .for_each(|item| process_item(item, &mut redis_hash));
         }),
     )?;
     println!("Created a subscription with id = {}", subscription_id);
@@ -65,12 +71,14 @@ fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
     Ok(())
 }
 
-fn process_item(item: &MonitoredItem) {
+fn process_item(item: &MonitoredItem, redis_hash: &mut RedisHashSync) {
     match item.id() {
         1 => {
             let value = item.last_value().value.as_ref().unwrap();
             let value = convert_opc_i16(value);
             println!("{:?}", value);
+            let msg = Messages::IntValueFromOpcUa(SimpleValue { value: value });
+            redis_hash.set("field1", msg).unwrap();
         }
         _ => (),
     }
@@ -106,25 +114,4 @@ fn convert_opc_i16(opc: &Variant) -> i16 {
         Variant::Diagnostics(_) => todo!(),
         Variant::Array(_) => todo!(),
     }
-}
-
-// fn main1() {
-//     let test_arr = Messages::Msg2(SimpleValue { value: 32f64 });
-
-//     let str = serde_json::to_string(&test_arr).unwrap();
-
-//     let deser: Messages = serde_json::from_str(&str).unwrap();
-
-//     match &deser {
-//         Messages::IntValueFromOpcUa(value) => println!("{}", value.value),
-//     }
-
-//     println!("{:?}", str);
-//     println!("{:?}", deser);
-// }
-
-use std::time::Duration;
-
-async fn test_async() {
-    std::thread::sleep(Duration::from_millis(2000));
 }

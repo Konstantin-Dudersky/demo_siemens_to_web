@@ -532,6 +532,7 @@ version = "0.0.1"
 dependencies = [
  "messages",
  "opcua",
+ "redis-client",
  "serde",
  "serde_json",
 ]

@@ -7,5 +7,5 @@ pub struct SimpleValue<T> {
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Messages {
-    IntValueFromOpcUa(SimpleValue<u16>),
+    IntValueFromOpcUa(SimpleValue<i16>),
 }
