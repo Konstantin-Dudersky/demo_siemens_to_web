@@ -1,0 +1,11 @@
+[package]
+name = "webapp"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+leptos = { workspace = true }
+tracing = { workspace = true }
+tracing-appender = { workspace = true }
+tracing-subscriber = { workspace = true }
