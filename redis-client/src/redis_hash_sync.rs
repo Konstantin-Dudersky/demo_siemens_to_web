@@ -1,3 +1,5 @@
+//! Реализация синхронного хеша redis
+
 use redis::Commands;
 use redis::Connection;
 use serde::{de::DeserializeOwned, Serialize};

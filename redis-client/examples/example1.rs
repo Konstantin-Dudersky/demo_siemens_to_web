@@ -1,4 +1,4 @@
-use redis_client::RedisHashAsync;
+use redis_client::{IRedisHashAsync, RedisHashAsync};
 use serde::{Deserialize, Serialize};
 use tokio::main;
 

@@ -1,3 +1,6 @@
+//! Реализация асинхронного хеша redis
+
+use async_trait::async_trait;
 use redis::aio::Connection;
 use redis::AsyncCommands;
 use serde::{de::DeserializeOwned, Serialize};
@@ -10,6 +13,17 @@ pub struct RedisHashAsync {
     hash_key: String,
 }
 
+#[async_trait]
+pub trait IRedisHashAsync {
+    async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
+    where
+        V: Serialize + std::marker::Send;
+
+    async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
+    where
+        V: DeserializeOwned;
+}
+
 impl RedisHashAsync {
     pub async fn new(url: &str, hash_key: &str) -> Result<Self, Errors> {
         let client = redis::Client::open(url)?;
@@ -19,10 +33,13 @@ impl RedisHashAsync {
             hash_key: hash_key.to_string(),
         })
     }
+}
 
-    pub async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
+#[async_trait]
+impl IRedisHashAsync for RedisHashAsync {
+    async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
     where
-        V: Serialize,
+        V: Serialize + std::marker::Send,
     {
         let json = match serialize(&value) {
             Ok(value) => value,
@@ -37,7 +54,7 @@ impl RedisHashAsync {
     /// Читаем поле из хеша
     /// Если хеша не существует, или поля в хеше нет, возвращается ошибка с
     /// kind() == TypeError
-    pub async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
+    async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
     where
         V: DeserializeOwned,
     {
@@ -76,7 +93,11 @@ mod tests {
     /// Функция устанавливает, считывает, и проверяет результат
     async fn set_and_get<V>(hash: &mut RedisHashAsync, field: &str, value: V)
     where
-        V: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug,
+        V: Serialize
+            + DeserializeOwned
+            + PartialEq
+            + std::fmt::Debug
+            + std::marker::Send,
     {
         hash.set(field, value).await.unwrap();
         let get_value: V = hash.get(field).await.unwrap();
