@@ -33,8 +33,8 @@ fn main() {
     let session = client
         .connect_to_endpoint(endpoint, IdentityToken::Anonymous)
         .unwrap();
-    let _ = Session::run_async(session.clone());
-    subscribe(session).unwrap();
+    subscribe(session.clone()).unwrap();
+    let _ = Session::run(session.clone());
     loop {
         std::thread::sleep(Duration::from_millis(2000));
     }
@@ -59,7 +59,6 @@ fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
     )?;
     println!("Created a subscription with id = {}", subscription_id);
 
-    // Create some monitored items
     let items_to_create: Vec<MonitoredItemCreateRequest> =
         [2].iter().map(|v| NodeId::new(4, *v).into()).collect();
     let _ = session.create_monitored_items(
@@ -78,7 +77,7 @@ fn process_item(item: &MonitoredItem, redis_hash: &mut RedisHashSync) {
             let value = convert_opc_i16(value);
             println!("{:?}", value);
             let msg = Messages::IntValueFromOpcUa(SimpleValue { value: value });
-            redis_hash.set("field1", msg).unwrap();
+            redis_hash.set(&msg.key(), msg).unwrap();
         }
         _ => (),
     }
