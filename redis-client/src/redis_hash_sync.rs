@@ -17,7 +17,7 @@ impl RedisHashSync {
         let client = redis::Client::open(url)?;
         let connection = client.get_connection()?;
         Ok(Self {
-            connection,
+            connection: connection,
             hash_key: hash_key.to_string(),
         })
     }

@@ -1,6 +1,5 @@
 //! Реализация асинхронного хеша redis
 
-use async_trait::async_trait;
 use redis::aio::Connection;
 use redis::AsyncCommands;
 use serde::{de::DeserializeOwned, Serialize};
@@ -13,17 +12,6 @@ pub struct RedisHashAsync {
     hash_key: String,
 }
 
-#[async_trait]
-pub trait IRedisHashAsync {
-    async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
-    where
-        V: Serialize + std::marker::Send;
-
-    async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
-    where
-        V: DeserializeOwned;
-}
-
 impl RedisHashAsync {
     pub async fn new(url: &str, hash_key: &str) -> Result<Self, Errors> {
         let client = redis::Client::open(url)?;
@@ -33,11 +21,7 @@ impl RedisHashAsync {
             hash_key: hash_key.to_string(),
         })
     }
-}
-
-#[async_trait]
-impl IRedisHashAsync for RedisHashAsync {
-    async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
+    pub async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
     where
         V: Serialize + std::marker::Send,
     {
@@ -54,7 +38,7 @@ impl IRedisHashAsync for RedisHashAsync {
     /// Читаем поле из хеша
     /// Если хеша не существует, или поля в хеше нет, возвращается ошибка с
     /// kind() == TypeError
-    async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
+    pub async fn get<V>(&mut self, field: &str) -> Result<V, Errors>
     where
         V: DeserializeOwned,
     {
@@ -79,6 +63,7 @@ impl IRedisHashAsync for RedisHashAsync {
 }
 
 // test ------------------------------------------------------------------------
+
 #[cfg(test)]
 mod tests {
     use super::*;
