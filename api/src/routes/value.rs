@@ -11,7 +11,9 @@ pub async fn get(
 ) -> String {
     println!("id: {id}");
     let mut redis_hash = state.redis_hash.lock().await;
-    redis_hash.get(&id).await.unwrap()
+    let msg: messages::Messages = redis_hash.get(&id).await.unwrap();
+    println!("{msg}");
+    serialize(&msg).unwrap()
 }
 
 pub async fn replace(

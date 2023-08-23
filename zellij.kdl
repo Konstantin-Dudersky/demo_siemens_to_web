@@ -12,7 +12,12 @@ layout {
     tab name="root" cwd="." {
 
     }
+
     tab name="api" cwd="./api" {
+        
+    }
+
+    tab name="webapp" cwd="./webapp" {
         
     }
 }
