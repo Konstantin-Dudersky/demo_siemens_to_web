@@ -2,6 +2,10 @@ https://leptos.dev/
 
 https://redis.io/
 
+```bash
+zellij --layout zellij.kdl
+```
+
 Для тестирования:
 
 - Запустить Redis на локальном компьютере
