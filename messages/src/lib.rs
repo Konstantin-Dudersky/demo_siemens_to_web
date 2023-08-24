@@ -10,6 +10,8 @@ pub struct SimpleValue<T> {
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Messages {
     IntValueFromOpcUa(SimpleValue<i16>),
+    CommandStart(SimpleValue<bool>),
+    CommandStop(SimpleValue<bool>),
 }
 
 impl Messages {

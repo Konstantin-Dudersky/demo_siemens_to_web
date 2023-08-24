@@ -16,7 +16,7 @@ pub async fn get(
     serialize(&msg).unwrap()
 }
 
-pub async fn replace(
+pub async fn put(
     extract::Path(id): extract::Path<String>,
     extract::State(state): extract::State<state::AppState>,
     extract::Json(payload): extract::Json<messages::Messages>,

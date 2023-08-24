@@ -10,14 +10,45 @@ layout {
     }
 
     tab name="root" cwd="." {
-
+        pane {
+            stacked true
+            pane {
+                name "general"
+            }
+            pane {
+                name "docker compose"
+                command "docker"
+                args "compose" "up"
+                start_suspended true
+            }
+        }
     }
 
     tab name="api" cwd="./api" {
+        pane split_direction="vertical" {
+            pane {
+                name "cargo run"
+                command "cargo"
+                args "run"
+                start_suspended true
+            }
+            pane { }
+        }
         
     }
 
     tab name="webapp" cwd="./webapp" {
-        
+        pane split_direction="vertical" {
+            pane {
+                name "trunk serve"
+                command "trunk"
+                args "serve" "--open"
+                start_suspended true
+            }
+            pane { }
+        }
+    }
+
+    tab name="messages" cwd="./messages" {
     }
 }

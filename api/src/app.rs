@@ -19,7 +19,7 @@ impl App {
         };
         let app = routing::Router::new()
             .route("/value/:id", routing::get(routes::value::get))
-            .route("/value/:id", routing::put(routes::value::replace))
+            .route("/value/:id", routing::put(routes::value::put))
             .with_state(shared_state)
             .layer(CorsLayer::permissive());
         Self { app }
