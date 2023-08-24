@@ -15,9 +15,9 @@ async fn create_test_server() -> TestServer {
 
 #[tokio::test]
 async fn test1() {
-    let msg1 = messages::Messages::IntValueFromOpcUa(messages::SimpleValue {
-        value: 15,
-    });
+    let msg1 = messages::Messages::IntValueFromOpcUa(
+        messages::types::SimpleValue::new(15),
+    );
 
     let test_server = create_test_server().await;
 

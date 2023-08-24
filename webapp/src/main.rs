@@ -9,16 +9,10 @@ use messages;
 fn App() -> impl IntoView {
     let (count, set_count) = create_signal(false);
 
-    let (start_get, start_set) = create_signal(false);
-
-    create_effect(move |_| {
-        console::log!("effect ", start_get.get());
-    });
-
     let start = create_action(|_| async {
-        let msg = messages::Messages::CommandStart(messages::SimpleValue {
-            value: true,
-        });
+        let msg = messages::Messages::CommandStart(
+            messages::types::SimpleValue::new(()),
+        );
         let resp = Request::put("http://localhost:3001/value/test_msg")
             .json(&msg)
             .unwrap()
@@ -41,7 +35,6 @@ fn App() -> impl IntoView {
 
     view! {
         <button on:click=move |_| {
-            // set_count.set(!count.get());
             start.dispatch(());
         }>
             "Start"
