@@ -20,3 +20,6 @@ tokio = { version = "1", features = ["full"] }
 
 messages = { path = "./messages" }
 redis-client = { path = "./redis-client" }
+
+# dev-dependencies
+ntest = { version = "0.9" }

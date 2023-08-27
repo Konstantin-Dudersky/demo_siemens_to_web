@@ -4,7 +4,7 @@ use axum::routing;
 use tokio::sync::Mutex;
 use tower_http::cors::CorsLayer;
 
-use redis_client::RedisHashAsync;
+use redis_client::RedisPubAsync;
 
 use crate::{routes, state};
 
@@ -13,7 +13,7 @@ pub struct App {
 }
 
 impl App {
-    pub fn new(redis_hash: RedisHashAsync) -> Self {
+    pub fn new(redis_hash: RedisPubAsync) -> Self {
         let shared_state = state::AppState {
             redis_hash: Arc::new(Mutex::new(redis_hash)),
         };

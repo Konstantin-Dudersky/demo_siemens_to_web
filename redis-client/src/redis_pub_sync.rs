@@ -1,4 +1,4 @@
-//! Реализация синхронного хеша redis
+//! Реализация синхронной публикации сообщений redis
 
 use redis::Commands;
 use redis::Connection;
@@ -7,18 +7,18 @@ use serde_json::{from_str as deserialize, to_string as serialize};
 
 use crate::errors::Errors;
 
-pub struct RedisHashSync {
+pub struct RedisPubSync {
     connection: Connection,
-    hash_key: String,
+    channel: String,
 }
 
-impl RedisHashSync {
-    pub fn new(url: &str, hash_key: &str) -> Result<Self, Errors> {
+impl RedisPubSync {
+    pub fn new(url: &str, channel: &str) -> Result<Self, Errors> {
         let client = redis::Client::open(url)?;
         let connection = client.get_connection()?;
         Ok(Self {
             connection: connection,
-            hash_key: hash_key.to_string(),
+            channel: channel.to_string(),
         })
     }
 
@@ -32,7 +32,7 @@ impl RedisHashSync {
                 return Err(Errors::SerializeError(error.to_string()))
             }
         };
-        self.connection.hset(&self.hash_key, field, json)?;
+        self.connection.hset(&self.channel, field, json)?;
         Ok(())
     }
 
@@ -44,7 +44,7 @@ impl RedisHashSync {
         V: DeserializeOwned,
     {
         let json: Result<String, redis::RedisError> =
-            self.connection.hget(&self.hash_key, field);
+            self.connection.hget(&self.channel, field);
         let json = match json {
             Ok(value) => value,
             Err(error) => match error.kind() {
@@ -69,13 +69,13 @@ mod tests {
     use super::*;
     use serde::Deserialize;
 
-    fn create_connection() -> RedisHashSync {
-        RedisHashSync::new("redis://127.0.0.1/", "test_hash")
+    fn create_connection() -> RedisPubSync {
+        RedisPubSync::new("redis://127.0.0.1/", "test_hash")
             .expect("Соединение не создано")
     }
 
     /// Функция устанавливает, считывает, и проверяет результат
-    fn set_and_get<V>(hash: &mut RedisHashSync, field: &str, value: V)
+    fn set_and_get<V>(hash: &mut RedisPubSync, field: &str, value: V)
     where
         V: Serialize + DeserializeOwned + PartialEq + std::fmt::Debug,
     {
@@ -135,7 +135,7 @@ mod tests {
     #[test]
     fn get_from_notexist_hash() {
         let mut hash =
-            RedisHashSync::new("redis://127.0.0.1/", "hash_no_created")
+            RedisPubSync::new("redis://127.0.0.1/", "hash_no_created")
                 .expect("Соединение не создано");
         match hash.get::<i32>("no_created_field") {
             Ok(value) => {

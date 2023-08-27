@@ -10,7 +10,7 @@ use opcua::client::prelude::*;
 use opcua::sync::RwLock;
 
 use messages::{Messages, SimpleValue};
-use redis_client::RedisHashSync;
+use redis_client::RedisPubSync;
 
 fn main() {
     let mut client = ClientBuilder::new()
@@ -51,7 +51,7 @@ fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
         true,
         DataChangeCallback::new(move |changed_monitored_items| {
             let mut redis_hash =
-                RedisHashSync::new("redis://127.0.0.1/", "opcua").unwrap();
+                RedisPubSync::new("redis://127.0.0.1/", "opcua").unwrap();
             changed_monitored_items
                 .iter()
                 .for_each(|item| process_item(item, &mut redis_hash));
@@ -70,7 +70,7 @@ fn subscribe(session: Arc<RwLock<Session>>) -> Result<(), StatusCode> {
     Ok(())
 }
 
-fn process_item(item: &MonitoredItem, redis_hash: &mut RedisHashSync) {
+fn process_item(item: &MonitoredItem, redis_hash: &mut RedisPubSync) {
     match item.id() {
         1 => {
             let value = item.last_value().value.as_ref().unwrap();

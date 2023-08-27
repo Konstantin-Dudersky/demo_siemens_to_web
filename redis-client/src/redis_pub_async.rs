@@ -1,4 +1,6 @@
-//! Реализация асинхронного хеша redis
+//! Реализация асинхронной публикации сообщений redis
+//!
+//! Значения публикуются в канале PubSub, и дополнительно сохраняются в хеше
 
 use redis::aio::Connection;
 use redis::AsyncCommands;
@@ -7,18 +9,18 @@ use serde_json::{from_str as deserialize, to_string as serialize};
 
 use crate::errors::Errors;
 
-pub struct RedisHashAsync {
+pub struct RedisPubAsync {
     connection: Connection,
-    hash_key: String,
+    channel: String,
 }
 
-impl RedisHashAsync {
-    pub async fn new(url: &str, hash_key: &str) -> Result<Self, Errors> {
+impl RedisPubAsync {
+    pub async fn new(url: &str, channel: &str) -> Result<Self, Errors> {
         let client = redis::Client::open(url)?;
         let connection = client.get_async_connection().await?;
         Ok(Self {
             connection,
-            hash_key: hash_key.to_string(),
+            channel: channel.to_string(),
         })
     }
     pub async fn set<V>(&mut self, field: &str, value: V) -> Result<(), Errors>
@@ -31,7 +33,8 @@ impl RedisHashAsync {
                 return Err(Errors::SerializeError(error.to_string()))
             }
         };
-        self.connection.hset(&self.hash_key, field, json).await?;
+        self.connection.hset(&self.channel, field, &json).await?;
+        self.connection.publish(&self.channel, &json).await?;
         Ok(())
     }
 
@@ -43,7 +46,7 @@ impl RedisHashAsync {
         V: DeserializeOwned,
     {
         let json: Result<String, redis::RedisError> =
-            self.connection.hget(&self.hash_key, field).await;
+            self.connection.hget(&self.channel, field).await;
         let json = match json {
             Ok(value) => value,
             Err(error) => match error.kind() {
@@ -69,14 +72,14 @@ mod tests {
     use super::*;
     use serde::Deserialize;
 
-    async fn create_connection() -> RedisHashAsync {
-        RedisHashAsync::new("redis://127.0.0.1/", "test_hash")
+    async fn create_connection() -> RedisPubAsync {
+        RedisPubAsync::new("redis://127.0.0.1/", "test_hash")
             .await
             .expect("Соединение не создано")
     }
 
     /// Функция устанавливает, считывает, и проверяет результат
-    async fn set_and_get<V>(hash: &mut RedisHashAsync, field: &str, value: V)
+    async fn set_and_get<V>(hash: &mut RedisPubAsync, field: &str, value: V)
     where
         V: Serialize
             + DeserializeOwned
@@ -141,7 +144,7 @@ mod tests {
     #[tokio::test]
     async fn get_from_notexist_hash() {
         let mut hash =
-            RedisHashAsync::new("redis://127.0.0.1/", "hash_no_created")
+            RedisPubAsync::new("redis://127.0.0.1/", "hash_no_created")
                 .await
                 .expect("Соединение не создано");
         match hash.get::<i32>("no_created_field").await {

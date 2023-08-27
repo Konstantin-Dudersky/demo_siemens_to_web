@@ -1,6 +1,9 @@
-use redis_client::RedisHashAsync;
+//! Пример реализации публикации сообщений, используя асинхронный клиент
+
 use serde::{Deserialize, Serialize};
 use tokio::main;
+
+use redis_client::RedisPubAsync;
 
 #[derive(Debug)]
 enum Tags {
@@ -20,7 +23,7 @@ impl std::fmt::Display for Tags {
 
 #[main]
 async fn main() {
-    let mut hash = RedisHashAsync::new("redis://127.0.0.1/", "test_hash")
+    let mut hash = RedisPubAsync::new("redis://127.0.0.1/", "test_hash")
         .await
         .expect("Соединение не создано");
 
