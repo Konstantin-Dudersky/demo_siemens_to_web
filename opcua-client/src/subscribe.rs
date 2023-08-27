@@ -1,6 +1,6 @@
 use std::sync::{mpsc::Sender, Arc};
 
-use chrono::{DateTime, FixedOffset};
+// use chrono::{DateTime, FixedOffset};
 use opcua::{
     client::prelude::{
         ClientBuilder, DataChangeCallback, IdentityToken, MonitoredItem,
@@ -8,19 +8,18 @@ use opcua::{
     },
     sync::RwLock,
     types::{
-        EndpointDescription, MessageSecurityMode, MonitoredItemCreateRequest,
-        NodeId, StatusCode, TimestampsToReturn, UserTokenPolicy, Variant,
+        DateTime, EndpointDescription, MessageSecurityMode,
+        MonitoredItemCreateRequest, NodeId, StatusCode, TimestampsToReturn,
+        UserTokenPolicy, Variant,
     },
 };
-
-use crate::convert;
 
 #[derive(Debug)]
 pub struct ValueFromOpcUa {
     pub node_id: NodeId,
     pub value: Option<Variant>,
-    pub source_timestamp: Option<DateTime<FixedOffset>>,
-    pub server_timestamp: Option<DateTime<FixedOffset>>,
+    pub source_timestamp: Option<DateTime>,
+    pub server_timestamp: Option<DateTime>,
 }
 
 pub fn subscribe(opcua_url: &str, channel_tx: Sender<ValueFromOpcUa>) {
@@ -89,12 +88,8 @@ fn prepare_item(item: &MonitoredItem) -> Vec<ValueFromOpcUa> {
         res.push(ValueFromOpcUa {
             node_id: node_id.clone(),
             value: value.value.clone(),
-            source_timestamp: convert::datetime_to_chrono(
-                value.source_timestamp,
-            ),
-            server_timestamp: convert::datetime_to_chrono(
-                value.server_timestamp,
-            ),
+            source_timestamp: value.source_timestamp,
+            server_timestamp: value.server_timestamp,
         });
     }
     res

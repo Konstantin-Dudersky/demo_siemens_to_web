@@ -38,7 +38,8 @@ mod tests {
 
     #[test]
     fn test_key() {
-        let msg1 = Messages::IntValueFromOpcUa(types::SimpleValue::new(10));
+        let msg1 =
+            Messages::IntValueFromOpcUa(types::SimpleValue::new(10, None));
         assert_eq!("IntValueFromOpcUa", msg1.key());
     }
 }
