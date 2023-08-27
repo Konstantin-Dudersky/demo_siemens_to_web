@@ -5,9 +5,10 @@ edition = "2021"
 
 
 [dependencies]
-opcua.workspace = true
-serde.workspace = true
-serde_json.workspace = true
+chrono = { workspace = true }
+opcua = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
 
 messages = { path = "../messages" }
 redis-client = { path = "../redis-client" }

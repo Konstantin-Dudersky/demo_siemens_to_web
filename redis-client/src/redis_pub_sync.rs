@@ -32,7 +32,8 @@ impl RedisPubSync {
                 return Err(Errors::SerializeError(error.to_string()))
             }
         };
-        self.connection.hset(&self.channel, field, json)?;
+        self.connection.hset(&self.channel, field, &json)?;
+        self.connection.publish(&self.channel, &json)?;
         Ok(())
     }
 

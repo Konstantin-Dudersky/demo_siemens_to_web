@@ -54,4 +54,7 @@ layout {
 
     tab name="redis-client" cwd="./redis-client" {
     }
+
+    tab name="opcua-client" cwd="./opcua-client" {
+    }
 }

@@ -1,5 +1,6 @@
 [workspace]
 members = ["api", "messages", "opcua-client", "redis-client", "webapp"]
+resolver = "2"
 
 
 [workspace.dependencies]
