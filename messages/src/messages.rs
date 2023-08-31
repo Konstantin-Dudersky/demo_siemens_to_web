@@ -7,6 +7,7 @@ use crate::types;
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Messages {
     IntValueFromOpcUa(types::SimpleValue<i16>),
+    IntValueToOpcUa(types::SimpleValue<i16>),
     CommandStart(types::SimpleValue<()>),
     CommandStop(types::SimpleValue<()>),
 }

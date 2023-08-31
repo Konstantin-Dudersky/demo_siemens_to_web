@@ -3,6 +3,7 @@ use chrono::ParseError;
 #[derive(Debug)]
 pub enum Errors {
     ConvertDateTimeToChrono(String),
+    ConvertFromVariant(String),
 }
 
 impl From<ParseError> for Errors {

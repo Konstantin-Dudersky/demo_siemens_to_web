@@ -8,7 +8,6 @@ edition = "2021"
 gloo = { workspace = true }
 leptos = { workspace = true }
 tracing = { workspace = true }
-tracing-appender = { workspace = true }
 tracing-subscriber = { workspace = true }
 
 messages = { workspace = true }

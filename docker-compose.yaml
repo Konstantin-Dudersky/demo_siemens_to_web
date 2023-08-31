@@ -1,23 +1,22 @@
-version: "3.8"
-name: demo_siemens_to_web
+version: "3"
 
 networks:
   loki:
 
 services:
-  redis:
-    container_name: redis
-    hostname: redis
-    image: redis/redis-stack:latest
-    ports:
-      - "6379:6379"
-      - "8010:8001"
-
   loki:
     image: grafana/loki:2.8.0
     ports:
       - "3100:3100"
     command: -config.file=/etc/loki/local-config.yaml
+    networks:
+      - loki
+
+  promtail:
+    image: grafana/promtail:2.8.0
+    volumes:
+      - /var/log:/var/log
+    command: -config.file=/etc/promtail/config.yml
     networks:
       - loki
 

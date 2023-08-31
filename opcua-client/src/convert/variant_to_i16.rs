@@ -1,7 +1,16 @@
 use opcua::types::Variant;
 
-pub fn variant_to_i16(opc: &Variant) -> i16 {
-    match opc {
+use crate::errors::Errors;
+
+pub fn variant_to_i16(opc: &Option<Variant>) -> Result<i16, Errors> {
+    let opc = match opc {
+        Some(opc) => opc,
+        None => {
+            let msg = "Empty value".to_string();
+            return Err(Errors::ConvertFromVariant(msg));
+        }
+    };
+    let value = match opc {
         Variant::Empty => todo!(),
         Variant::Boolean(_) => todo!(),
         Variant::SByte(_) => todo!(),
@@ -29,5 +38,6 @@ pub fn variant_to_i16(opc: &Variant) -> i16 {
         Variant::DataValue(_) => todo!(),
         Variant::Diagnostics(_) => todo!(),
         Variant::Array(_) => todo!(),
-    }
+    };
+    Ok(value)
 }

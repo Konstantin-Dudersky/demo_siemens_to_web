@@ -1,5 +1,8 @@
 Доки по клиенту - [https://github.com/locka99/opcua/blob/master/docs/client.md]
 
+OPC UA на данный момент не поддерживает tokio. Поэтому используются синхронные
+функции.
+
 Пример полученной структуры из OPC:
 
 ```rust
