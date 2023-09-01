@@ -18,7 +18,7 @@ layout {
             pane {
                 name "docker compose"
                 command "docker"
-                args "compose" "up"
+                args "compose" "up" "-d"
                 start_suspended true
             }
         }

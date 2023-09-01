@@ -1,5 +1,12 @@
 [workspace]
-members = ["api", "messages", "opcua-client", "redis-client", "webapp"]
+members = [
+    "api",
+    "logging",
+    "messages",
+    "opcua-client",
+    "redis-client",
+    "webapp",
+]
 resolver = "2"
 
 
@@ -19,6 +26,7 @@ tracing-loki = { version = "0.2" }
 tracing-subscriber = { version = "0.3" }
 tokio = { version = "1", features = ["full"] }
 
+logging = { path = "./logging" }
 messages = { path = "./messages" }
 redis-client = { path = "./redis-client" }
 

@@ -2,7 +2,9 @@ use tracing::{info, Level};
 use tracing_loki::url::Url;
 use tracing_subscriber::{filter::FilterFn, prelude::*};
 
-pub async fn log_init() {
+use crate::errors::Errors;
+
+pub async fn logging(service: &str) -> Result<(), Errors> {
     let my_filter = FilterFn::new(|metadata| {
         let level = metadata.level();
         let module_path = metadata.module_path().unwrap_or_default();
@@ -21,16 +23,18 @@ pub async fn log_init() {
     });
 
     let (layer_loki, task) = tracing_loki::builder()
-        .label("service", "opcua-client")
-        .unwrap()
-        .build_url(Url::parse("http://localhost:3100").unwrap())
-        .unwrap();
+        .label("service", service)?
+        .build_url(Url::parse("http://localhost:3100")?)?;
+
+    let layer_stdout = tracing_subscriber::fmt::Layer::new().pretty();
 
     tracing_subscriber::registry()
-        .with(layer_loki.with_filter(my_filter))
+        .with(layer_loki.with_filter(my_filter.clone()))
+        .with(layer_stdout.with_filter(my_filter.clone()))
         .init();
 
     tokio::spawn(task);
 
     info!("service started");
+    Ok(())
 }

@@ -2,16 +2,19 @@ use std::sync::{mpsc::Sender, Arc};
 
 use opcua::{
     client::prelude::{
-        ClientBuilder, DataChangeCallback, IdentityToken, MonitoredItem,
-        MonitoredItemService, Session, SubscriptionService,
+        DataChangeCallback, MonitoredItem, MonitoredItemService, Session,
+        SubscriptionService,
     },
     sync::RwLock,
     types::{
-        DateTime, EndpointDescription, MessageSecurityMode,
-        MonitoredItemCreateRequest, NodeId, StatusCode, TimestampsToReturn,
-        UserTokenPolicy, Variant,
+        DateTime, MonitoredItemCreateRequest, NodeId, TimestampsToReturn,
+        Variant,
     },
 };
+use tracing::{error, info};
+
+use crate::create_session::create_session;
+use crate::errors::Errors;
 
 #[derive(Debug)]
 pub struct ValueFromOpcUa {
@@ -21,35 +24,20 @@ pub struct ValueFromOpcUa {
     pub server_timestamp: Option<DateTime>,
 }
 
-pub fn subscribe(opcua_url: &str, channel_tx: Sender<ValueFromOpcUa>) {
-    let mut client = ClientBuilder::new()
-        .application_name("My First Client")
-        .application_uri("urn:MyFirstClient")
-        .create_sample_keypair(true)
-        .trust_server_certs(true)
-        .session_retry_limit(0)
-        .client()
-        .unwrap();
-
-    let endpoint: EndpointDescription = (
-        opcua_url,
-        "None",
-        MessageSecurityMode::None,
-        UserTokenPolicy::anonymous(),
-    )
-        .into();
-
-    let session = client
-        .connect_to_endpoint(endpoint, IdentityToken::Anonymous)
-        .unwrap();
-    subscribe_(session.clone(), channel_tx).unwrap();
+pub fn subscribe(
+    opcua_url: &str,
+    channel_tx: Sender<ValueFromOpcUa>,
+) -> Result<(), Errors> {
+    let session = create_session(opcua_url)?;
+    subscribe_(session.clone(), channel_tx)?;
     Session::run(session.clone());
+    Ok(())
 }
 
 fn subscribe_(
     session: Arc<RwLock<Session>>,
     tx: Sender<ValueFromOpcUa>,
-) -> Result<(), StatusCode> {
+) -> Result<(), Errors> {
     let session = session.write();
     let subscription_id = session.create_subscription(
         1000.0,
@@ -62,12 +50,17 @@ fn subscribe_(
             for item in changed_monitored_items {
                 let val = prepare_item(item);
                 for v in val {
-                    tx.send(v).unwrap()
+                    match tx.send(v) {
+                        Ok(_) => (),
+                        Err(err) => {
+                            error!("{}", err.to_string());
+                        }
+                    }
                 }
             }
         }),
     )?;
-    println!("Created a subscription with id = {}", subscription_id);
+    info!("Created a subscription with id = {}", subscription_id);
 
     let items_to_create: Vec<MonitoredItemCreateRequest> =
         [2].iter().map(|v| NodeId::new(4, *v).into()).collect();
