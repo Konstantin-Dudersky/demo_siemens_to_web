@@ -60,17 +60,25 @@ fn App() -> impl IntoView {
     );
 
     view! {
-        Состояние: {move || motor_state.get()}
-        <button on:click=move |_| {
+        Состояние
+        {move || motor_state.get()}
+
+        <div class="lx yz ze alo aqw"><span class="ec ly adu bbn"><button type="button" class="ab ly yz aed alo arf arv awa awg axv bbt bbx bcf bih bmh">Years</button><button type="button" class="ab ia ly yz alo arf arv awa awg axv bbt bbx bcf bih bmh">Months</button><button type="button" class="ab ia ly yz aeh alo arf arv awa awg axv bbt bbx bcf bih bmh">Days</button></span></div>
+
+        <div
+        on:click=move |_| {
             command_start.dispatch(());
-        }>
-            "Start"
-        </button>
-        <button on:click=move |_| {
-            command_stop.dispatch(());
-        }>
-            "Stop"
-        </button>
+        }
+        class="pointer-events-auto rounded-md bg-indigo-600 px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500">
+        Start
+    </div>
+        <div
+            on:click=move |_| {
+                command_stop.dispatch(());
+            }
+            class="pointer-events-auto rounded-md bg-indigo-600 px-3 py-2 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500">
+            Stop
+        </div>
     }
 }
 
