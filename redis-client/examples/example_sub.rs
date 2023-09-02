@@ -16,8 +16,8 @@ async fn main() {
     let (tx, rx) = mpsc::channel::<String>();
 
     // запускаем поток с подпиской
-    thread::spawn(|| {
-        start_redis_subscription(url, channel, tx).unwrap();
+    thread::spawn(move || {
+        start_redis_subscription(url, channel, &tx).unwrap();
     });
 
     // отправляем сообщение
