@@ -42,7 +42,7 @@ fn subscribe_(
 ) -> Result<(), Errors> {
     let session = session.write();
     let subscription_id = session.create_subscription(
-        1000.0,
+        500.0,
         10,
         30,
         0,

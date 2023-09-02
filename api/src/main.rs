@@ -3,7 +3,7 @@ use redis_client::RedisPubAsync;
 
 #[tokio::main]
 async fn main() {
-    let redis_hash = RedisPubAsync::new("redis://127.0.0.1/", "test_api")
+    let redis_hash = RedisPubAsync::new("redis://127.0.0.1/", "opcua")
         .await
         .unwrap();
     let app = app::App::new(redis_hash);

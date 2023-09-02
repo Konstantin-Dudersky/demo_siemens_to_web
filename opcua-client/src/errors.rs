@@ -8,7 +8,7 @@ use redis_client::Errors as RedisErrors;
 #[derive(Debug)]
 pub enum Errors {
     ConvertDateTimeToChrono(String),
-    ConvertFromVariant(String),
+    ConvertFromVariantError(String),
     ClientNotCreated,
     SessionNotCreated(String),
     StatusCode(String),

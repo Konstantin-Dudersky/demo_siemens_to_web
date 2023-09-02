@@ -6,10 +6,11 @@ use crate::types;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Messages {
-    IntValueFromOpcUa(types::SimpleValue<i16>),
-    IntValueToOpcUa(types::SimpleValue<i16>),
-    CommandStart(types::SimpleValue<()>),
-    CommandStop(types::SimpleValue<()>),
+    MotorState(types::SingleValue<i16>),
+    CommandStart(types::Command),
+    CommandStop(types::Command),
+    SetpointRead(types::SingleValue<f64>),
+    SetpointChange(types::SingleValue<f64>),
 }
 
 impl Messages {
@@ -39,8 +40,7 @@ mod tests {
 
     #[test]
     fn test_key() {
-        let msg1 =
-            Messages::IntValueFromOpcUa(types::SimpleValue::new(10, None));
+        let msg1 = Messages::MotorState(types::SingleValue::new(10, None));
         assert_eq!("IntValueFromOpcUa", msg1.key());
     }
 }

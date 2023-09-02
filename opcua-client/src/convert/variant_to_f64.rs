@@ -2,7 +2,7 @@ use opcua::types::Variant;
 
 use crate::errors::Errors;
 
-pub fn variant_to_i16(opc: &Option<Variant>) -> Result<i16, Errors> {
+pub fn variant_to_f64(opc: &Option<Variant>) -> Result<f64, Errors> {
     let opc = match opc {
         Some(opc) => opc,
         None => {
@@ -15,14 +15,14 @@ pub fn variant_to_i16(opc: &Option<Variant>) -> Result<i16, Errors> {
         Variant::Boolean(_) => todo!(),
         Variant::SByte(_) => todo!(),
         Variant::Byte(_) => todo!(),
-        Variant::Int16(value) => *value,
-        Variant::UInt16(value) => *value as i16,
+        Variant::Int16(_) => todo!(),
+        Variant::UInt16(_) => todo!(),
         Variant::Int32(_) => todo!(),
         Variant::UInt32(_) => todo!(),
         Variant::Int64(_) => todo!(),
         Variant::UInt64(_) => todo!(),
-        Variant::Float(_) => todo!(),
-        Variant::Double(_) => todo!(),
+        Variant::Float(value) => *value as f64,
+        Variant::Double(value) => *value,
         Variant::String(_) => todo!(),
         Variant::DateTime(_) => todo!(),
         Variant::Guid(_) => todo!(),

@@ -15,8 +15,8 @@ async fn create_test_server() -> TestServer {
 
 #[tokio::test]
 async fn test1() {
-    let msg1 = messages::Messages::IntValueFromOpcUa(
-        messages::types::SimpleValue::new(15),
+    let msg1 = messages::Messages::MotorState(
+        messages::types::SingleValue::new(15, None),
     );
 
     let test_server = create_test_server().await;

@@ -1,15 +1,8 @@
 use messages::{types, Messages};
-use opcua::{
-    client::prelude::Session,
-    sync::RwLock,
-    types::{Identifier, NodeId},
-};
+use opcua::types::{Identifier, NodeId};
 use std::{
     any::Any,
-    sync::{
-        mpsc::{self, Receiver, Sender},
-        Arc,
-    },
+    sync::mpsc::{self, Receiver, Sender},
     thread,
     time::Duration,
 };
@@ -18,8 +11,7 @@ use tracing::{error, info};
 
 use logging::logging;
 use opcua_client::{
-    convert, create_session, subscribe, write, Errors, ValueFromOpcUa,
-    ValueToOpcUa,
+    convert, subscribe, write, Errors, ValueFromOpcUa, ValueToOpcUa,
 };
 use redis_client::{start_redis_subscription, RedisPubSync};
 
@@ -167,9 +159,8 @@ fn thread_to_opcua(
     opcua_url: &str,
     channel_rx: &Receiver<Messages>,
 ) -> Result<(), Errors> {
-    let session = create_session(opcua_url)?;
     for msg in channel_rx {
-        msg_redis_to_opcua(&msg, session.clone())?;
+        msg_redis_to_opcua(opcua_url, &msg)?;
     }
     Ok(())
 }
@@ -180,7 +171,10 @@ fn thread_to_opcua(
 fn create_nodes_for_subscription() -> Vec<NodeId> {
     // namespace
     const NS: u16 = 4;
-    vec![NodeId::new(NS, Identifier::Numeric(2))]
+    vec![
+        NodeId::new(NS, Identifier::Numeric(2)),
+        NodeId::new(NS, Identifier::Numeric(5)),
+    ]
 }
 
 /// Подготавливаем полученные из OPC UA теги для отправки в Redis
@@ -191,7 +185,14 @@ fn msg_opcua_to_redis(
         Identifier::Numeric(2) => {
             let value = convert::variant_to_i16(&msg.value)?;
             let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
-            let msg = Messages::IntValueFromOpcUa(types::SimpleValue::new(
+            let msg =
+                Messages::MotorState(types::SingleValue::new(value, Some(ts)));
+            Ok(Some(msg))
+        }
+        Identifier::Numeric(5) => {
+            let value = convert::variant_to_f64(&msg.value)?;
+            let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
+            let msg = Messages::SetpointRead(types::SingleValue::new(
                 value,
                 Some(ts),
             ));
@@ -201,17 +202,30 @@ fn msg_opcua_to_redis(
     }
 }
 
-fn msg_redis_to_opcua(
-    msg: &Messages,
-    session: Arc<RwLock<Session>>,
-) -> Result<(), Errors> {
+fn msg_redis_to_opcua(opcua_url: &str, msg: &Messages) -> Result<(), Errors> {
+    const NS: u16 = 4;
+
     match msg {
-        Messages::IntValueToOpcUa(value) => {
+        Messages::CommandStart(_) => {
             let value = ValueToOpcUa {
-                node_id: NodeId::new(4, 2),
-                value: convert::i16_to_variant(value.value),
+                node_id: NodeId::new(NS, 3),
+                value: convert::bool_to_variant(true),
             };
-            write(session, value)?
+            write(opcua_url, value)?
+        }
+        Messages::CommandStop(_) => {
+            let value = ValueToOpcUa {
+                node_id: NodeId::new(NS, 4),
+                value: convert::bool_to_variant(true),
+            };
+            write(opcua_url, value)?
+        }
+        Messages::SetpointChange(value) => {
+            let value = ValueToOpcUa {
+                node_id: NodeId::new(NS, 5),
+                value: convert::f32_to_variant(value.value as f32),
+            };
+            write(opcua_url, value)?
         }
         _ => (),
     };
