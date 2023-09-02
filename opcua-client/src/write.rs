@@ -2,12 +2,17 @@ use std::sync::Arc;
 
 use opcua::{client::prelude::*, sync::RwLock};
 
+use crate::Errors;
+
 pub struct ValueToOpcUa {
     pub node_id: NodeId,
     pub value: Option<Variant>,
 }
 
-pub fn publish(session: Arc<RwLock<Session>>, value: ValueToOpcUa) {
+pub fn write(
+    session: Arc<RwLock<Session>>,
+    value: ValueToOpcUa,
+) -> Result<(), Errors> {
     let session = session.read();
     let write_value = WriteValue {
         node_id: value.node_id,
@@ -22,17 +27,6 @@ pub fn publish(session: Arc<RwLock<Session>>, value: ValueToOpcUa) {
             server_picoseconds: None,
         },
     };
-    session.write(&[write_value]).unwrap();
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    pub fn test1() {
-        let (tx, rx) = std::sync::mpsc::channel::<String>();
-
-        // publish("opc.tcp://192.168.101.180:4840/", tx);
-    }
+    session.write(&[write_value])?;
+    Ok(())
 }

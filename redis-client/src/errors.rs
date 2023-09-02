@@ -1,3 +1,5 @@
+use std::fmt;
+
 use redis::RedisError;
 
 #[derive(Debug)]
@@ -9,10 +11,18 @@ pub enum Errors {
     SerializeError(String),
     /// Ошибка десериализации
     DeserializeError(String),
+    // Ошибка отправки соообщения в канал mpsc
+    SendThreadChannleError(String),
 }
 
 impl From<RedisError> for Errors {
     fn from(value: RedisError) -> Self {
         Errors::RedisConnectionError(value.to_string())
+    }
+}
+
+impl fmt::Display for Errors {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        fmt::Debug::fmt(self, f)
     }
 }

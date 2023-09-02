@@ -11,7 +11,7 @@ use opcua::{
         Variant,
     },
 };
-use tracing::{error, info};
+use tracing::{error, info, trace};
 
 use crate::create_session::create_session;
 use crate::errors::Errors;
@@ -27,16 +27,18 @@ pub struct ValueFromOpcUa {
 pub fn subscribe(
     opcua_url: &str,
     channel_tx: Sender<ValueFromOpcUa>,
+    nodes: Vec<NodeId>,
 ) -> Result<(), Errors> {
     let session = create_session(opcua_url)?;
-    subscribe_(session.clone(), channel_tx)?;
+    subscribe_(session.clone(), channel_tx, nodes)?;
     Session::run(session.clone());
     Ok(())
 }
 
 fn subscribe_(
     session: Arc<RwLock<Session>>,
-    tx: Sender<ValueFromOpcUa>,
+    channel_tx: Sender<ValueFromOpcUa>,
+    nodes: Vec<NodeId>,
 ) -> Result<(), Errors> {
     let session = session.write();
     let subscription_id = session.create_subscription(
@@ -48,9 +50,10 @@ fn subscribe_(
         true,
         DataChangeCallback::new(move |changed_monitored_items| {
             for item in changed_monitored_items {
+                trace!("new value from OPC UA subscription: {:?}", item);
                 let val = prepare_item(item);
                 for v in val {
-                    match tx.send(v) {
+                    match channel_tx.send(v) {
                         Ok(_) => (),
                         Err(err) => {
                             error!("{}", err.to_string());
@@ -63,7 +66,7 @@ fn subscribe_(
     info!("Created a subscription with id = {}", subscription_id);
 
     let items_to_create: Vec<MonitoredItemCreateRequest> =
-        [2].iter().map(|v| NodeId::new(4, *v).into()).collect();
+        nodes.iter().map(|v| v.clone().into()).collect();
     let _ = session.create_monitored_items(
         subscription_id,
         TimestampsToReturn::Both,

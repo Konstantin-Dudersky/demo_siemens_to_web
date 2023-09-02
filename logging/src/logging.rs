@@ -4,7 +4,7 @@ use tracing_subscriber::{filter::FilterFn, prelude::*};
 
 use crate::errors::Errors;
 
-pub async fn logging(service: &str) -> Result<(), Errors> {
+pub async fn logging(service: &str, loki_url: &str) -> Result<(), Errors> {
     let my_filter = FilterFn::new(|metadata| {
         let level = metadata.level();
         let module_path = metadata.module_path().unwrap_or_default();
@@ -24,7 +24,7 @@ pub async fn logging(service: &str) -> Result<(), Errors> {
 
     let (layer_loki, task) = tracing_loki::builder()
         .label("service", service)?
-        .build_url(Url::parse("http://localhost:3100")?)?;
+        .build_url(Url::parse(loki_url)?)?;
 
     let layer_stdout = tracing_subscriber::fmt::Layer::new().pretty();
 
@@ -35,6 +35,6 @@ pub async fn logging(service: &str) -> Result<(), Errors> {
 
     tokio::spawn(task);
 
-    info!("service started");
+    info!("service {} started", service);
     Ok(())
 }

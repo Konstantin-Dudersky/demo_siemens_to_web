@@ -4,6 +4,7 @@ use redis::Commands;
 use redis::Connection;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str as deserialize, to_string as serialize};
+use tracing::trace;
 
 use crate::errors::Errors;
 
@@ -32,6 +33,7 @@ impl RedisPubSync {
                 return Err(Errors::SerializeError(error.to_string()))
             }
         };
+        trace!("Send message to Redis: {json}");
         self.connection.hset(&self.channel, field, &json)?;
         self.connection.publish(&self.channel, &json)?;
         Ok(())

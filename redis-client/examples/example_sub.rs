@@ -17,7 +17,7 @@ async fn main() {
 
     // запускаем поток с подпиской
     thread::spawn(|| {
-        start_redis_subscription(url, channel, tx);
+        start_redis_subscription(url, channel, tx).unwrap();
     });
 
     // отправляем сообщение
