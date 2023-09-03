@@ -19,7 +19,7 @@ use redis_client::{start_redis_subscription, RedisPubSync};
 
 #[main]
 async fn main() {
-    let config = env_vars::load().expect("Настройки не загружены");
+    let config = env_vars::load().expect("Setting not loaded");
 
     logging("opcua-client", config.loki_url.as_str())
         .await
