@@ -1,0 +1,12 @@
+[package]
+name = "env_vars"
+version = "0.0.1"
+edition = "2021"
+
+
+[dependencies]
+dotenvy = { workspace = true }
+envy = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+url = { workspace = true }

@@ -1,3 +1,4 @@
 /target
 /pki
 **/dist
+.env
