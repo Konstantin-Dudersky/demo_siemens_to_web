@@ -42,6 +42,7 @@ url = { version = "2.4", features = ["serde"] }
 logging = { path = "./logging" }
 messages = { path = "./messages" }
 redis-client = { path = "./redis-client" }
+env_vars = { path = "./utils/env_vars" }
 
 # dev-dependencies
 ntest = { version = "0.9" }

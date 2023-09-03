@@ -8,7 +8,9 @@ use std::{
 };
 use tokio::main;
 use tracing::{error, info};
+use url::Url;
 
+use env_vars;
 use logging::logging;
 use opcua_client::{
     convert, subscribe, write, Errors, ValueFromOpcUa, ValueToOpcUa,
@@ -17,17 +19,20 @@ use redis_client::{start_redis_subscription, RedisPubSync};
 
 #[main]
 async fn main() {
-    logging("opcua-client", "http://localhost:3100")
+    let config = env_vars::load().expect("Настройки не загружены");
+
+    logging("opcua-client", config.loki_url.as_str())
         .await
         .expect("Error in logger initialization");
 
-    let redis_url = "redis://127.0.0.1/";
-    let redis_channel = "opcua";
-    const OPCUA_URL: &str = "opc.tcp://192.168.101.180:4840/";
-
     // Запуск потоков OPC UA -> Redis
-    let threads_opcua_to_redis = thread::spawn(|| loop {
-        let res = threads_opcua_to_redis(redis_url, redis_channel, OPCUA_URL);
+    let config_copy = config.clone();
+    let threads_opcua_to_redis = thread::spawn(move || loop {
+        let res = threads_opcua_to_redis(
+            &config_copy.redis_url,
+            &config_copy.redis_channel,
+            &config_copy.opcua_url,
+        );
         if let Err(err) = res {
             error!("Error in threads OPC UA -> Redis: {err:?}")
         };
@@ -36,15 +41,19 @@ async fn main() {
     });
 
     // Запуск потоков Redis -> OPC UA
-    let threads_redis_to_opcua = thread::spawn(|| loop {
-        let res = threads_redis_to_opcua(redis_url, redis_channel, OPCUA_URL);
+    let config_copy = config.clone();
+    let threads_redis_to_opcua = thread::spawn(move || loop {
+        let res = threads_redis_to_opcua(
+            &config_copy.redis_url,
+            &config_copy.redis_channel,
+            &config_copy.opcua_url,
+        );
         if let Err(err) = res {
             error!("Error in threads Redis -> OPC UA: {err:?}")
         };
         info!("Restarting threads Redis -> OPC UA...");
         std::thread::sleep(Duration::from_secs(2));
     });
-
     threads_opcua_to_redis.join().unwrap();
     threads_redis_to_opcua.join().unwrap();
 }
@@ -53,9 +62,9 @@ async fn main() {
 
 /// Запуск потоков OPC UA -> Redis
 fn threads_opcua_to_redis(
-    redis_url: &str,
+    redis_url: &Url,
     redis_channel: &str,
-    opcua_url: &str,
+    opcua_url: &Url,
 ) -> Result<(), Box<dyn Any + Send>> {
     let redis_url = redis_url.to_string();
     let redis_channel = redis_channel.to_string();
@@ -113,9 +122,9 @@ fn thread_to_redis(
 
 /// Запуск потоков Redis -> OPC UA
 fn threads_redis_to_opcua(
-    redis_url: &str,
+    redis_url: &Url,
     redis_channel: &str,
-    opcua_url: &str,
+    opcua_url: &Url,
 ) -> Result<(), Box<dyn Any + Send>> {
     let redis_url = redis_url.to_string();
     let redis_channel = redis_channel.to_string();
@@ -202,6 +211,7 @@ fn msg_opcua_to_redis(
     }
 }
 
+/// Подготавливаем полученные из Redis сообщения для отправки в OPC UA
 fn msg_redis_to_opcua(opcua_url: &str, msg: &Messages) -> Result<(), Errors> {
     const NS: u16 = 4;
 
