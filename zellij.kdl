@@ -39,11 +39,18 @@ layout {
 
     tab name="webapp" cwd="./webapp" {
         pane split_direction="vertical" {
-            pane {
-                name "trunk serve"
-                command "trunk"
-                args "serve" "--open"
-                start_suspended true
+            pane split_direction="horizontal" {
+                pane {
+                    name "trunk serve"
+                    command "trunk"
+                    args "serve" "--open"
+                    start_suspended true
+                }
+                pane {
+                    name "tailwind watch"
+                    command "npx"
+                    args "tailwindcss" "-i" "./input.css" "-o" "./style/output.css" "--watch"
+                }
             }
             pane { }
         }

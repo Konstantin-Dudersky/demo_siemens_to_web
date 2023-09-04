@@ -9,3 +9,9 @@ trunk serve --open
 ```
 trunk build --release
 ```
+
+Сборка tailwind:
+
+```bash
+tailwindcss -i ./input.css -o ./style/output.css
+```
