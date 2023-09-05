@@ -60,20 +60,36 @@ fn App() -> impl IntoView {
     );
 
     view! {
-        Состояние
-        {move || motor_state.get()}
+        <div class="container mx-auto">
+            <div class="flex flex-row">
+                <div class="basis-1/2">
+                    <p class="m-4">
+                        Состояние
+                    </p>
+                </div>
+                <div class="basis-1/2">
+                    <p class="m-4">
+                    <State res=motor_state/>
+                    // {move || motor_state.get()}
+                    </p>
+                </div>
 
-        <Button
-            label="Start".to_string()
-            action=command_start
-        />
-
-        <Button
-            label="Stop".to_string()
-            action=command_stop
-        />
-
-
+            </div>
+            <div class="flex flex-row">
+                <div class="basis-1/2">
+                    <Button
+                    label="Start".to_string()
+                    action=command_start
+                    />
+                </div>
+                <div class="basis-1/2">
+                    <Button
+                    label="Stop".to_string()
+                    action=command_stop
+                    />
+                </div>
+            </div>
+        </div>
     }
 }
 
@@ -82,10 +98,32 @@ fn Button(label: String, action: Action<(), ()>) -> impl IntoView {
     view! {
         <div
             on:click=move |_| { action.dispatch(()) }
-            class="pointer-events-auto rounded-md bg-indigo-600 py-2 px-3  text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500"
+            class="pointer-events-auto rounded-md bg-indigo-600 py-2 px-3 text-[0.8125rem] font-semibold leading-5 text-white hover:bg-indigo-500 m-4"
             >
             { label }
         </div>
+    }
+}
+
+#[component]
+fn State(res: Resource<bool, i16>) -> impl IntoView {
+    let text = move || match res.get() {
+        Some(0) => "Стоп",
+        Some(1) => "Работа",
+        _ => "Неизвестно",
+    };
+
+    view! {
+        <span class="inline-flex items-center rounded-md px-2 py-1 text-sm font-semibold ring-1 ring-inset ring-gray-500/10"
+
+        class=("bg-grey-50", move || {res.get() == Some(0)})
+        class=("text-gray-600", move || {res.get() == Some(0)})
+
+        class=("bg-green-50", move || {res.get() == Some(1)})
+        class=("text-green-700", move || {res.get() == Some(1)})
+        >
+            { text }
+        </span>
     }
 }
 
