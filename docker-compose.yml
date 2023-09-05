@@ -50,3 +50,21 @@ services:
       - "3000:3000"
     networks:
       - loki
+
+  db:
+    container_name: db
+    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    hostname: db
+    image: timescale/timescaledb:2.11.2-pg15
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_volume:/var/lib/postgresql/data
+      - ${PWD}/postgresql.conf:/etc/postgresql/postgresql.conf
+
+volumes:
+  db_volume:
+    name: db_volume
