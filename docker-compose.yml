@@ -10,7 +10,7 @@ services:
     hostname: redis
     image: redis/redis-stack:latest
     ports:
-      - "6379:6379"
+      - "${REDIS_PORT}:6379"
       - "8010:8001"
 
   loki:
@@ -47,7 +47,7 @@ services:
         /run.sh
     image: grafana/grafana:latest
     ports:
-      - "3000:3000"
+      - "${GRAFANA_PORT}:3000"
     networks:
       - loki
 
@@ -62,11 +62,12 @@ services:
     hostname: db
     image: timescale/timescaledb:2.11.2-pg15
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432"
     volumes:
       - db_volume:/var/lib/postgresql/data
       - ./services/db/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./services/db/pg_hba.conf:/etc/postgresql/pg_hba.conf
+      - ./services/db/init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   db_volume:

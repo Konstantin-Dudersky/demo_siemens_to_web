@@ -64,4 +64,7 @@ layout {
 
     tab name="opcua-client" cwd="./opcua-client" {
     }
+
+    tab name="services/db_saver" cwd="./services/db_saver" {
+    }
 }
