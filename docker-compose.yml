@@ -53,7 +53,9 @@ services:
 
   db:
     container_name: db
-    command: postgres -c config_file=/etc/postgresql/postgresql.conf
+    command: postgres 
+      -c config_file=/etc/postgresql/postgresql.conf 
+      -c hba_file=/etc/postgresql/pg_hba.conf
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
@@ -63,7 +65,8 @@ services:
       - "5432:5432"
     volumes:
       - db_volume:/var/lib/postgresql/data
-      - ${PWD}/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./services/db/postgresql.conf:/etc/postgresql/postgresql.conf
+      - ./services/db/pg_hba.conf:/etc/postgresql/pg_hba.conf
 
 volumes:
   db_volume:
