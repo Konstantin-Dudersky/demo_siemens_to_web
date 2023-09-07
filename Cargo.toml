@@ -5,6 +5,7 @@ members = [
     "messages",
     "opcua-client",
     "redis-client",
+    "services/db_saver",
     "utils/env_vars",
     "webapp",
 ]

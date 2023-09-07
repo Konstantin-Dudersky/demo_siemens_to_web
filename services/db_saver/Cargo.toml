@@ -1,0 +1,14 @@
+[package]
+name = "db_saver"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+chrono = { workspace = true }
+sqlx = { version = "0.7", features = [
+    "chrono",
+    "macros",
+    "postgres",
+    "runtime-tokio",
+] }
+tokio = { workspace = true }
