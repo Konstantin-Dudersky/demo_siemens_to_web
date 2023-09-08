@@ -1,13 +1,14 @@
 [workspace]
 members = [
-    "api",
-    "logging",
-    "messages",
-    "opcua-client",
-    "redis-client",
+    "libraries/redis-client",
+    "libraries/opcua-client-lib",
+    "services/api",
     "services/db_saver",
+    "services/opcua-client",
+    "services/webapp",
     "utils/env_vars",
-    "webapp",
+    "utils/logging",
+    "utils/messages",
 ]
 resolver = "2"
 
@@ -41,10 +42,11 @@ toml = { version = "0.7" }
 url = { version = "2.4", features = ["serde"] }
 
 # мои пакеты
-logging = { path = "./logging" }
-messages = { path = "./messages" }
-redis-client = { path = "./redis-client" }
+opcua-client-lib = { path = "./libraries/opcua-client-lib" }
+redis-client = { path = "./libraries/redis-client" }
 env_vars = { path = "./utils/env_vars" }
+logging = { path = "./utils/logging" }
+messages = { path = "./utils/messages" }
 
 # dev-dependencies
 ntest = { version = "0.9" }

@@ -1,20 +1,19 @@
-use messages::{types, Messages};
-use opcua::types::{Identifier, NodeId};
 use std::{
     any::Any,
     sync::mpsc::{self, Receiver, Sender},
     thread,
     time::Duration,
 };
+
 use tokio::main;
 use tracing::{error, info};
 use url::Url;
 
 use env_vars;
 use logging::logging;
-use opcua_client::{
-    convert, subscribe, write, Errors, ValueFromOpcUa, ValueToOpcUa,
-};
+use messages::Messages;
+use opcua_client::config;
+use opcua_client_lib::{subscribe, Errors, ValueFromOpcUa};
 use redis_client::{start_redis_subscription, RedisPubSync};
 
 #[main]
@@ -97,7 +96,7 @@ fn thread_from_opcua(
     opcua_url: &str,
     channel_tx: &Sender<ValueFromOpcUa>,
 ) -> Result<(), Errors> {
-    let nodes = create_nodes_for_subscription();
+    let nodes = config::create_nodes_for_subscription();
     subscribe(opcua_url, channel_tx.clone(), nodes)?;
     Ok(())
 }
@@ -110,7 +109,7 @@ fn thread_to_redis(
 ) -> Result<(), Errors> {
     let mut redis_hash = RedisPubSync::new(redis_url, redis_channel)?;
     for msg in channel_rx {
-        let msg = msg_opcua_to_redis(&msg)?;
+        let msg = config::msg_opcua_to_redis(&msg)?;
         if let Some(msg) = msg {
             redis_hash.set(&msg.key(), msg)?;
         }
@@ -169,75 +168,7 @@ fn thread_to_opcua(
     channel_rx: &Receiver<Messages>,
 ) -> Result<(), Errors> {
     for msg in channel_rx {
-        msg_redis_to_opcua(opcua_url, &msg)?;
+        config::msg_redis_to_opcua(opcua_url, &msg)?;
     }
-    Ok(())
-}
-
-// -----------------------------------------------------------------------------
-
-/// Перечисляем теги OPC UA, на которые будем подписываться
-fn create_nodes_for_subscription() -> Vec<NodeId> {
-    // namespace
-    const NS: u16 = 4;
-    vec![
-        NodeId::new(NS, Identifier::Numeric(2)),
-        NodeId::new(NS, Identifier::Numeric(5)),
-    ]
-}
-
-/// Подготавливаем полученные из OPC UA теги для отправки в Redis
-fn msg_opcua_to_redis(
-    msg: &ValueFromOpcUa,
-) -> Result<Option<Messages>, Errors> {
-    match msg.node_id.identifier {
-        Identifier::Numeric(2) => {
-            let value = convert::variant_to_i16(&msg.value)?;
-            let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
-            let msg =
-                Messages::MotorState(types::SingleValue::new(value, Some(ts)));
-            Ok(Some(msg))
-        }
-        Identifier::Numeric(5) => {
-            let value = convert::variant_to_f64(&msg.value)?;
-            let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
-            let msg = Messages::SetpointRead(types::SingleValue::new(
-                value,
-                Some(ts),
-            ));
-            Ok(Some(msg))
-        }
-        _ => Ok(None),
-    }
-}
-
-/// Подготавливаем полученные из Redis сообщения для отправки в OPC UA
-fn msg_redis_to_opcua(opcua_url: &str, msg: &Messages) -> Result<(), Errors> {
-    const NS: u16 = 4;
-
-    match msg {
-        Messages::CommandStart(_) => {
-            let value = ValueToOpcUa {
-                node_id: NodeId::new(NS, 3),
-                value: convert::bool_to_variant(true),
-            };
-            write(opcua_url, value)?
-        }
-        Messages::CommandStop(_) => {
-            let value = ValueToOpcUa {
-                node_id: NodeId::new(NS, 4),
-                value: convert::bool_to_variant(true),
-            };
-            write(opcua_url, value)?
-        }
-        Messages::SetpointChange(value) => {
-            let value = ValueToOpcUa {
-                node_id: NodeId::new(NS, 5),
-                value: convert::f32_to_variant(value.value as f32),
-            };
-            write(opcua_url, value)?
-        }
-        _ => (),
-    };
     Ok(())
 }

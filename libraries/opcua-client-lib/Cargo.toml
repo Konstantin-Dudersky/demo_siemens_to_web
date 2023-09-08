@@ -1,0 +1,12 @@
+[package]
+name = "opcua-client-lib"
+version = "0.0.1"
+edition = "2021"
+
+
+[dependencies]
+chrono = { workspace = true }
+opcua = { workspace = true }
+tracing = { workspace = true }
+
+redis-client = { workspace = true }
