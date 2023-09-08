@@ -1,6 +1,9 @@
 use chrono::{DateTime, FixedOffset, Utc};
-use sqlx::postgres::{PgPoolOptions, PgTypeInfo};
+use sqlx::postgres::PgPoolOptions;
 use tokio::main;
+
+use env_vars;
+use logging::logging;
 
 #[derive(sqlx::Type)]
 #[sqlx(type_name = "agg_type", rename_all = "lowercase")]
@@ -25,8 +28,7 @@ struct Row {
     aggnext: Option<Vec<AggType>>,
 }
 
-#[main]
-async fn main() -> Result<(), sqlx::Error> {
+async fn main1() -> Result<(), sqlx::Error> {
     let pool = PgPoolOptions::new()
         .max_connections(5)
         .connect("postgres://postgres:password@localhost/db_data_test")
@@ -61,4 +63,15 @@ ON CONFLICT (ts, entity, attr, agg) DO UPDATE
     .await?;
 
     Ok(())
+}
+
+#[main]
+async fn main() {
+    let config = env_vars::load().expect("Setting not loaded");
+
+    logging("db-saver", config.loki_url.as_str())
+        .await
+        .expect("Error in logger initialization");
+
+    tokio::time::sleep(std::time::Duration::from_secs(50)).await;
 }

@@ -545,6 +545,10 @@ name = "db_saver"
 version = "0.0.1"
 dependencies = [
  "chrono",
+ "env_vars",
+ "logging",
+ "messages",
+ "redis-client",
  "sqlx",
  "tokio",
 ]

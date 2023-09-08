@@ -17,6 +17,7 @@ pub struct Config {
 
     pub grafana_port: u16,
 
+    pub loki_port: u16,
     pub loki_url: Url,
 
     pub opcua_url: Url,
@@ -29,6 +30,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            loki_port: 3100,
             loki_url: Url::from_str("http://localhost:3100").unwrap(),
             opcua_url: Url::from_str("opc.tcp://192.168.101.180:4840/")
                 .unwrap(),

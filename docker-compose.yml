@@ -14,14 +14,19 @@ services:
       - "8010:8001"
 
   loki:
-    image: grafana/loki:2.8.0
+    container_name: loki
+    hostname: loki
+    image: grafana/loki:2.9.0
     ports:
-      - "3100:3100"
+      - "${LOKI_PORT}:3100"
     command: -config.file=/etc/loki/local-config.yaml
     networks:
       - loki
 
   grafana:
+    container_name: grafana
+    hostname: grafana
+    image: grafana/grafana:latest
     environment:
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
       - GF_AUTH_ANONYMOUS_ENABLED=true
@@ -38,14 +43,13 @@ services:
           type: loki
           access: proxy 
           orgId: 1
-          url: http://loki:3100
+          url: http://loki:${LOKI_PORT}
           basicAuth: false
           isDefault: true
           version: 1
           editable: false
         EOF
         /run.sh
-    image: grafana/grafana:latest
     ports:
       - "${GRAFANA_PORT}:3000"
     networks:
@@ -53,13 +57,13 @@ services:
 
   db:
     container_name: db
-    command: postgres 
-      -c config_file=/etc/postgresql/postgresql.conf 
+    hostname: db
+    command: postgres
+      -c config_file=/etc/postgresql/postgresql.conf
       -c hba_file=/etc/postgresql/pg_hba.conf
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-    hostname: db
     image: timescale/timescaledb:2.11.2-pg15
     ports:
       - "${DB_PORT}:5432"
