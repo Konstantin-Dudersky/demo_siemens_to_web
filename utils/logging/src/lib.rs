@@ -1,5 +1,5 @@
+mod config;
 mod errors;
-mod logging;
 
+pub use config::logging;
 pub use errors::Errors;
-pub use logging::logging;

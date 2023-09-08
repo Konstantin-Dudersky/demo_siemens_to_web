@@ -21,17 +21,15 @@ pub fn msg_opcua_to_redis(
         Identifier::Numeric(2) => {
             let value = convert::variant_to_i16(&msg.value)?;
             let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
-            let msg =
-                Messages::MotorState(types::SingleValue::new(value, Some(ts)));
+            let msg_content = types::SingleValue::new(value, Some(ts));
+            let msg = Messages::MotorState(msg_content);
             Ok(Some(msg))
         }
         Identifier::Numeric(5) => {
             let value = convert::variant_to_f64(&msg.value)?;
             let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
-            let msg = Messages::SetpointRead(types::SingleValue::new(
-                value,
-                Some(ts),
-            ));
+            let msg_content = types::SingleValue::new(value, Some(ts));
+            let msg = Messages::SetpointRead(msg_content);
             Ok(Some(msg))
         }
         _ => Ok(None),
@@ -67,7 +65,8 @@ pub fn msg_redis_to_opcua(
             };
             write(opcua_url, value)?
         }
-        _ => (),
+        Messages::MotorState(_) => (),
+        Messages::SetpointRead(_) => (),
     };
     Ok(())
 }

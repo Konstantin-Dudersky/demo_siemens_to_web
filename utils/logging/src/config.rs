@@ -21,7 +21,7 @@ pub async fn logging(service: &str, loki_url: &str) -> Result<(), Errors> {
 
         true
     });
-
+ 
     let (layer_loki, task) = tracing_loki::builder()
         .label("service", service)?
         .build_url(Url::parse(loki_url)?)?;

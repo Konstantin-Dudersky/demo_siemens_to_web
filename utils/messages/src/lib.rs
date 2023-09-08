@@ -1,4 +1,4 @@
-mod messages;
+mod config;
 pub mod types;
 
-pub use messages::Messages;
+pub use config::Messages;

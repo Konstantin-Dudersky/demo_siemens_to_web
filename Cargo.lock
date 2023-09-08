@@ -1927,15 +1927,12 @@ dependencies = [
 name = "opcua-client"
 version = "0.0.1"
 dependencies = [
- "chrono",
  "env_vars",
  "logging",
  "messages",
  "opcua",
  "opcua-client-lib",
  "redis-client",
- "serde",
- "serde_json",
  "tokio",
  "tracing",
  "url 2.4.1",

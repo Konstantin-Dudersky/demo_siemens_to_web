@@ -41,8 +41,8 @@ impl Default for Config {
             grafana_port: 3000,
 
             redis_channel: Default::default(),
-            redis_url: Url::from_str("redis://localhost:6379").unwrap(),
             redis_port: 6379,
+            redis_url: Url::from_str("redis://localhost:6379").unwrap(),
         }
     }
 }
