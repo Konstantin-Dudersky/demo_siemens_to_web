@@ -11,8 +11,10 @@ pub enum Errors {
     SerializeError(String),
     /// Ошибка десериализации
     DeserializeError(String),
-    // Ошибка отправки соообщения в канал mpsc
+    /// Ошибка отправки соообщения в канал mpsc
     SendThreadChannleError(String),
+    /// Ошибка получения собщения из асинхронной подписки PubSub
+    GetMessageError,
 }
 
 impl From<RedisError> for Errors {

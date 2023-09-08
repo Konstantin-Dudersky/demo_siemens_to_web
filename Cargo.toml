@@ -18,6 +18,8 @@ chrono = { version = "0.4", features = ["serde"] }
 opcua = { version = "0.11", features = ["client"] }
 redis = { version = "0.23.2", features = ["tokio-comp"] }
 tokio = { version = "1", features = ["full"] }
+# для асинхронной подписки PubSub в Redis
+futures-util = { version = "0.3" }
 
 # api
 axum = { version = "0.6" }

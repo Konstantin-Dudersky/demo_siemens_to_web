@@ -59,7 +59,7 @@ layout {
     tab name="messages" cwd="./messages" {
     }
 
-    tab name="redis-client" cwd="./redis-client" {
+    tab name="redis-client" cwd="./libraries/redis-client" {
     }
 
     tab name="opcua-client" cwd="./opcua-client" {
