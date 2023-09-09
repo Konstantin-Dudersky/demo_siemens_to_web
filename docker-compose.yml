@@ -2,7 +2,7 @@ version: "3.8"
 name: demo_siemens_to_web
 
 networks:
-  loki:
+  demo_siemens_to_web_net:
 
 services:
   redis:
@@ -21,7 +21,7 @@ services:
       - "${LOKI_PORT}:3100"
     command: -config.file=/etc/loki/local-config.yaml
     networks:
-      - loki
+      - demo_siemens_to_web_net
 
   grafana:
     container_name: grafana
@@ -32,12 +32,13 @@ services:
       - GF_AUTH_ANONYMOUS_ENABLED=true
       - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
       - LOKI_PORT=${LOKI_PORT}
+      - DB_PORT=${DB_PORT}
     ports:
       - "${GRAFANA_PORT}:3000"
     volumes:
       - ./services/grafana/datasources:/etc/grafana/provisioning/datasources
     networks:
-      - loki
+      - demo_siemens_to_web_net
 
   db:
     container_name: db
@@ -56,6 +57,8 @@ services:
       - ./services/db/postgresql.conf:/etc/postgresql/postgresql.conf
       - ./services/db/pg_hba.conf:/etc/postgresql/pg_hba.conf
       - ./services/db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - demo_siemens_to_web_net
 
 volumes:
   db_volume:
