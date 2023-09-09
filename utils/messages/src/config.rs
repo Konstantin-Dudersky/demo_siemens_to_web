@@ -10,7 +10,8 @@ pub enum Messages {
     CommandStart(types::Command),
     CommandStop(types::Command),
     SetpointRead(types::SingleValue<f64>),
-    SetpointChange(types::SingleValue<f64>),
+    SetpointWrite(types::SingleValue<f64>),
+    Temperature(types::SingleValue<f64>),
 }
 
 impl Messages {

@@ -2,7 +2,7 @@ use redis_client::start_redis_subscription_async;
 use sqlx::postgres::PgPoolOptions;
 use tokio::{main, spawn, sync::mpsc};
 
-use db_saver_lib::{models, save_row_in_db};
+use db_saver_lib::save_row_in_db;
 use env_vars;
 use logging::logging;
 use messages::Messages;

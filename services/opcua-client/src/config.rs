@@ -10,6 +10,7 @@ pub fn create_nodes_for_subscription() -> Vec<NodeId> {
     vec![
         NodeId::new(NS, Identifier::Numeric(2)),
         NodeId::new(NS, Identifier::Numeric(5)),
+        NodeId::new(NS, Identifier::Numeric(6)),
     ]
 }
 
@@ -30,6 +31,13 @@ pub fn msg_opcua_to_redis(
             let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
             let msg_content = types::SingleValue::new(value, Some(ts));
             let msg = Messages::SetpointRead(msg_content);
+            Ok(Some(msg))
+        }
+        Identifier::Numeric(6) => {
+            let value = convert::variant_to_f64(&msg.value)?;
+            let ts = convert::datetime_to_chrono(&msg.source_timestamp)?;
+            let msg_content = types::SingleValue::new(value, Some(ts));
+            let msg = Messages::Temperature(msg_content);
             Ok(Some(msg))
         }
         _ => Ok(None),
@@ -58,7 +66,7 @@ pub fn msg_redis_to_opcua(
             };
             write(opcua_url, value)?
         }
-        Messages::SetpointChange(value) => {
+        Messages::SetpointWrite(value) => {
             let value = ValueToOpcUa {
                 node_id: NodeId::new(NS, 5),
                 value: convert::f32_to_variant(value.value as f32),
@@ -67,6 +75,7 @@ pub fn msg_redis_to_opcua(
         }
         Messages::MotorState(_) => (),
         Messages::SetpointRead(_) => (),
+        Messages::Temperature(_) => (),
     };
     Ok(())
 }

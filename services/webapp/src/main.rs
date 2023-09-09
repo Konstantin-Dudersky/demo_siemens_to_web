@@ -48,13 +48,22 @@ fn App() -> impl IntoView {
         move || update.get(),
         |_| async move {
             let ans = get_message_from_api("MotorState").await;
-            if let messages::Messages::MotorState(
-                messages::types::SingleValue { value, .. },
-            ) = ans
-            {
-                value
+            if let messages::Messages::MotorState(value) = ans {
+                value.value
             } else {
                 0
+            }
+        },
+    );
+
+    let temperature = create_resource(
+        move || update.get(),
+        |_| async move {
+            let ans = get_message_from_api("Temperature").await;
+            if let messages::Messages::Temperature(value) = ans {
+                value.value
+            } else {
+                0.0
             }
         },
     );
@@ -70,10 +79,20 @@ fn App() -> impl IntoView {
                 <div class="basis-1/2">
                     <p class="m-4">
                     <State res=motor_state/>
-                    // {move || motor_state.get()}
                     </p>
                 </div>
-
+            </div>
+            <div class="flex flex-row">
+                <div class="basis-1/2">
+                    <p class="m-4">
+                        Температура
+                    </p>
+                </div>
+                <div class="basis-1/2">
+                    <p class="m-4">
+                        {move|| {temperature.get()}}
+                    </p>
+                </div>
             </div>
             <div class="flex flex-row">
                 <div class="basis-1/2">

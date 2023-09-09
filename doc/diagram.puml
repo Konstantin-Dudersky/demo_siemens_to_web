@@ -1,0 +1,27 @@
+!include <C4/C4_Container>
+!include <tupadr3/devicons/redis>
+!include <tupadr3/devicons/rust>
+!include <tupadr3/devicons/postgresql>
+
+title demo_siemens_to_web
+
+Container(webapp, "webapp", "Leptos, WASM", "", $sprite="rust")
+Container(api, "api", "axum", "", $sprite="rust")
+Container(redis, "redis", "Hash, PubSub", "", $sprite="redis")
+Container(db_saver, "db-saver", "sqlx", "", $sprite="rust")
+Container(db, "db", "PostgreSQL, TimeseriesDB", "", $sprite="postgresql")
+Container(opcua_client, "opcua-client", "opcua", "", $sprite="rust")
+Container(grafana, "grafana", "", "Отображение графиков")
+Container(loki, "loki", "", "Логгирование")
+Container(plc, "plc", "Siemens", "")
+
+
+Rel(webapp, api, "http query")
+Rel(api, redis, "get hash")
+Rel_Neighbor(redis, db_saver, "subscription")
+Rel_Neighbor(db_saver, db, "save")
+Rel_Back(grafana, db, "SQL")
+Rel_Back(grafana, loki, "LogQL")
+Rel(redis, opcua_client, "subscription")
+Rel(opcua_client, redis, "publish")
+Rel(opcua_client, plc, "read/write")
