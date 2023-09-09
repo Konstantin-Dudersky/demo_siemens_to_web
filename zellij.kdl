@@ -24,7 +24,7 @@ layout {
         }
     }
 
-    tab name="api" cwd="./api" {
+    tab name="api" cwd="./services/api" {
         pane split_direction="vertical" {
             pane {
                 name "cargo run"
@@ -37,7 +37,7 @@ layout {
         
     }
 
-    tab name="webapp" cwd="./webapp" {
+    tab name="webapp" cwd="./services/webapp" {
         pane split_direction="vertical" {
             pane split_direction="horizontal" {
                 pane {
@@ -56,7 +56,7 @@ layout {
         }
     }
 
-    tab name="messages" cwd="./messages" {
+    tab name="messages" cwd="./utils/messages" {
     }
 
     tab name="redis-client" cwd="./libraries/redis-client" {

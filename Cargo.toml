@@ -2,8 +2,9 @@
 members = [
     "libraries/redis-client",
     "libraries/opcua-client-lib",
+    "libraries/db-saver-lib",
     "services/api",
-    "services/db_saver",
+    "services/db-saver",
     "services/opcua-client",
     "services/webapp",
     "utils/env_vars",
@@ -55,6 +56,7 @@ redis-client = { path = "./libraries/redis-client" }
 env_vars = { path = "./utils/env_vars" }
 logging = { path = "./utils/logging" }
 messages = { path = "./utils/messages" }
+db-saver-lib = { path = "./libraries/db-saver-lib" }
 
 # dev-dependencies
 ntest = { version = "0.9" }

@@ -4,7 +4,6 @@ version = "0.0.1"
 edition = "2021"
 
 [dependencies]
-chrono = { workspace = true }
 sqlx = { workspace = true }
 tokio = { workspace = true }
 
@@ -12,3 +11,4 @@ env_vars = { workspace = true }
 logging = { workspace = true }
 messages = { workspace = true }
 redis-client = { workspace = true }
+db-saver-lib = { workspace = true }

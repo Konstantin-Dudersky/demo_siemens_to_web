@@ -1,0 +1,8 @@
+[package]
+name = "db-saver-lib"
+version = "0.0.1"
+edition = "2021"
+
+[dependencies]
+chrono = { workspace = true }
+sqlx = { workspace = true }

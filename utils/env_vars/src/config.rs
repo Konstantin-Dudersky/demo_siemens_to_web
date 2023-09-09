@@ -13,7 +13,11 @@ pub fn load() -> Result<Config, Errors> {
 pub struct Config {
     // Для статической проверки SQL-запросов, не переименовывать
     pub database_url: Url,
+
+    pub db_host: String,
     pub db_port: u16,
+    pub db_user: String,
+    pub db_password: String,
 
     pub grafana_port: u16,
 
@@ -34,11 +38,16 @@ impl Default for Config {
             loki_url: Url::from_str("http://localhost:3100").unwrap(),
             opcua_url: Url::from_str("opc.tcp://192.168.101.180:4840/")
                 .unwrap(),
+
             database_url: Url::from_str(
                 "postgres://postgres:password@localhost:5432/db_data_test",
             )
             .unwrap(),
+
+            db_host: "localhost".to_string(),
             db_port: 5432,
+            db_user: "postgres".to_string(),
+            db_password: "postgres".to_string(),
 
             grafana_port: 3000,
 

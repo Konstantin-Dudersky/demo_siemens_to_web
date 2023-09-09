@@ -82,6 +82,8 @@ version = "0.0.1"
 dependencies = [
  "axum",
  "axum-test",
+ "env_vars",
+ "logging",
  "messages",
  "redis-client",
  "serde",
@@ -542,10 +544,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "db_saver"
+name = "db-saver-lib"
 version = "0.0.1"
 dependencies = [
  "chrono",
+ "sqlx",
+]
+
+[[package]]
+name = "db_saver"
+version = "0.0.1"
+dependencies = [
+ "db-saver-lib",
  "env_vars",
  "logging",
  "messages",

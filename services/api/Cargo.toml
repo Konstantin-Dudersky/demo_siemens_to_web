@@ -12,6 +12,8 @@ serde_json = { workspace = true }
 tower-http = { workspace = true }
 url = { workspace = true }
 # мои пакеты
+env_vars = { workspace = true }
+logging = { workspace = true }
 messages = { workspace = true }
 redis-client = { workspace = true }
 
