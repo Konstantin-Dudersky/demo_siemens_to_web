@@ -62,9 +62,9 @@ layout {
     tab name="redis-client" cwd="./libraries/redis-client" {
     }
 
-    tab name="opcua-client" cwd="./opcua-client" {
+    tab name="opcua-client" cwd="./services/opcua-client" {
     }
 
-    tab name="services/db_saver" cwd="./services/db_saver" {
+    tab name="db_saver" cwd="./services/db_saver" {
     }
 }

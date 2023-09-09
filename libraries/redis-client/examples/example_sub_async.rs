@@ -3,19 +3,22 @@
 //! Запустить, после запуска можно отправлять сообщения. Сообщения должны
 //! печататься. Отправлять можно простые строки, не забыть кавычки.
 
+use std::str::FromStr;
+
 use tokio::{join, main, spawn, sync::mpsc};
+use url::Url;
 
 use redis_client::start_redis_subscription_async;
 
 #[main]
 async fn main() {
-    let url = "redis://127.0.0.1";
+    let url = Url::from_str("redis://127.0.0.1").unwrap();
     let channel = "redis_sub_async";
 
     let (tx, mut rx) = mpsc::channel::<String>(32);
 
     let sp1 = spawn(async move {
-        start_redis_subscription_async(url, channel, &tx)
+        start_redis_subscription_async(&url, channel, &tx)
             .await
             .unwrap();
     });

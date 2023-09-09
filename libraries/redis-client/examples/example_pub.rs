@@ -1,7 +1,9 @@
 //! Пример реализации публикации сообщений, используя асинхронный клиент
 
 use serde::{Deserialize, Serialize};
+use std::str::FromStr;
 use tokio::main;
+use url::Url;
 
 use redis_client::RedisPubAsync;
 
@@ -23,7 +25,8 @@ impl std::fmt::Display for Tags {
 
 #[main]
 async fn main() {
-    let mut hash = RedisPubAsync::new("redis://127.0.0.1/", "test_hash")
+    let url = Url::from_str("redis://127.0.0.1").expect("");
+    let mut hash = RedisPubAsync::new(&url, "test_hash")
         .await
         .expect("Соединение не создано");
 

@@ -1,6 +1,7 @@
 use chrono::{DateTime, FixedOffset, Utc};
+use redis_client::start_redis_subscription_async;
 use sqlx::postgres::PgPoolOptions;
-use tokio::main;
+use tokio::{main, spawn, sync::mpsc};
 
 use env_vars;
 use logging::logging;
@@ -72,6 +73,19 @@ async fn main() {
     logging("db-saver", config.loki_url.as_str())
         .await
         .expect("Error in logger initialization");
+
+    let (tx, mut rx) = mpsc::channel::<String>(32);
+
+    let config_clone = config.clone();
+    let sp1 = spawn(async move {
+        start_redis_subscription_async(
+            &config_clone.redis_url,
+            config_clone.redis_channel.as_str(),
+            &tx,
+        )
+        .await
+        .unwrap();
+    });
 
     tokio::time::sleep(std::time::Duration::from_secs(50)).await;
 }

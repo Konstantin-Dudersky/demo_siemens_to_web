@@ -125,7 +125,7 @@ fn threads_redis_to_opcua(
     redis_channel: &str,
     opcua_url: &Url,
 ) -> Result<(), Box<dyn Any + Send>> {
-    let redis_url = redis_url.to_string();
+    let redis_url = redis_url.to_owned();
     let redis_channel = redis_channel.to_string();
     let opcua_url = opcua_url.to_string();
 
@@ -154,7 +154,7 @@ fn threads_redis_to_opcua(
 
 /// Поток получения новых сообщений из Redis
 fn thread_from_redis(
-    redis_url: &str,
+    redis_url: &Url,
     redis_channel: &str,
     channel_tx: &Sender<Messages>,
 ) -> Result<(), Errors> {

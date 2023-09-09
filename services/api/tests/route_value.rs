@@ -1,14 +1,16 @@
+use std::str::FromStr;
+
 use axum_test::TestServer;
 use serde_json::to_string as serialize;
+use url::Url;
 
 use redis_client::RedisPubAsync;
 
 use api::app;
 
 async fn create_test_server() -> TestServer {
-    let redis_hash = RedisPubAsync::new("redis://127.0.0.1/", "test_api")
-        .await
-        .unwrap();
+    let url = Url::from_str("redis://127.0.0.1").unwrap();
+    let redis_hash = RedisPubAsync::new(&url, "test_api").await.unwrap();
     let app = app::App::new(redis_hash);
     TestServer::new(app.app.into_make_service()).unwrap()
 }

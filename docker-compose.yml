@@ -37,6 +37,7 @@ services:
       - "${GRAFANA_PORT}:3000"
     volumes:
       - ./services/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./services/grafana/dashboards:/etc/grafana/provisioning/dashboards
     networks:
       - demo_siemens_to_web_net
 

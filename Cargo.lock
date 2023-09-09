@@ -88,6 +88,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tower-http",
+ "url 2.4.1",
 ]
 
 [[package]]
@@ -2414,6 +2415,7 @@ dependencies = [
  "serde_json",
  "tokio",
  "tracing",
+ "url 2.4.1",
 ]
 
 [[package]]

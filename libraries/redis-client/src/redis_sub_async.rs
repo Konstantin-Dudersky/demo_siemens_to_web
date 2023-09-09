@@ -7,19 +7,20 @@ use serde_json::from_str as deserialize;
 use tracing::trace;
 
 use futures_util::StreamExt as _;
+use url::Url;
 
 use crate::errors::Errors;
 
 /// Подписка на сообщения из Redis. Вызывать из задачи Tokio.
 pub async fn start_redis_subscription_async<V>(
-    url: &str,
+    url: &Url,
     channel: &str,
     tx: &Sender<V>,
 ) -> Result<(), Errors>
 where
     V: DeserializeOwned + std::fmt::Debug,
 {
-    let client = redis::Client::open(url)?;
+    let client = redis::Client::open(url.to_string())?;
     let connection = client.get_async_connection().await?;
     let mut pubsub = connection.into_pubsub();
     pubsub.subscribe(channel).await?;
@@ -44,6 +45,8 @@ where
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::super::RedisPubAsync;
     use super::*;
 
@@ -55,15 +58,16 @@ mod tests {
     #[tokio::test]
     #[timeout(1000)]
     async fn test1() {
-        let url = "redis://127.0.0.1";
+        let url = Url::from_str("redis://127.0.0.1").expect("");
         let channel = "redis_sub_async";
         let msg_content = "test pub value";
 
         let (tx, mut rx) = mpsc::channel::<String>(32);
 
         // запускаем задачу с подпиской
+        let url_clone = url.clone();
         let _ = spawn(async move {
-            start_redis_subscription_async(url, channel, &tx)
+            start_redis_subscription_async(&url_clone, channel, &tx)
                 .await
                 .expect("");
         });
@@ -71,7 +75,7 @@ mod tests {
         let sp2 = spawn(async move {
             // отправляем сообщение
             let mut redis_hash =
-                RedisPubAsync::new(url, channel).await.expect("");
+                RedisPubAsync::new(&url, channel).await.expect("");
             redis_hash.set(channel, msg_content).await.expect("");
 
             // проверяем, что сообщение пришло

@@ -6,6 +6,7 @@ use redis::aio::Connection;
 use redis::AsyncCommands;
 use serde::{de::DeserializeOwned, Serialize};
 use serde_json::{from_str as deserialize, to_string as serialize};
+use url::Url;
 
 use crate::errors::Errors;
 
@@ -15,8 +16,8 @@ pub struct RedisPubAsync {
 }
 
 impl RedisPubAsync {
-    pub async fn new(url: &str, channel: &str) -> Result<Self, Errors> {
-        let client = redis::Client::open(url)?;
+    pub async fn new(url: &Url, channel: &str) -> Result<Self, Errors> {
+        let client = redis::Client::open(url.to_string())?;
         let connection = client.get_async_connection().await?;
         Ok(Self {
             connection,
@@ -69,11 +70,14 @@ impl RedisPubAsync {
 
 #[cfg(test)]
 mod tests {
+    use std::str::FromStr;
+
     use super::*;
     use serde::Deserialize;
 
     async fn create_connection() -> RedisPubAsync {
-        RedisPubAsync::new("redis://127.0.0.1/", "test_hash")
+        let url = Url::from_str("redis://127.0.0.1/").unwrap();
+        RedisPubAsync::new(&url, "test_hash")
             .await
             .expect("Соединение не создано")
     }
@@ -143,10 +147,10 @@ mod tests {
     /// Читаем из несуществующего хеша
     #[tokio::test]
     async fn get_from_notexist_hash() {
-        let mut hash =
-            RedisPubAsync::new("redis://127.0.0.1/", "hash_no_created")
-                .await
-                .expect("Соединение не создано");
+        let url = Url::from_str("redis://127.0.0.1").expect("");
+        let mut hash = RedisPubAsync::new(&url, "hash_no_created")
+            .await
+            .expect("Соединение не создано");
         match hash.get::<i32>("no_created_field").await {
             Ok(value) => {
                 panic!("Вернулось значение, хотя не должно было: {value}")
