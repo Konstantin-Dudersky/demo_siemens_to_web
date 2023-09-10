@@ -94,6 +94,21 @@ dependencies = [
 ]
 
 [[package]]
+name = "api-ws"
+version = "0.0.1"
+dependencies = [
+ "env_vars",
+ "futures-util",
+ "logging",
+ "messages",
+ "redis-client",
+ "serde_json",
+ "tokio",
+ "tokio-tungstenite",
+ "tracing",
+]
+
+[[package]]
 name = "async-recursion"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -542,6 +557,12 @@ dependencies = [
  "generic-array",
  "typenum",
 ]
+
+[[package]]
+name = "data-encoding"
+version = "2.4.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c2e66c9d817f1720209181c316d28635c050fa304f9c79e47a520882661b7308"
 
 [[package]]
 name = "db-saver-lib"
@@ -3354,6 +3375,18 @@ dependencies = [
 ]
 
 [[package]]
+name = "tokio-tungstenite"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2b2dbec703c26b00d74844519606ef15d09a7d6857860f84ad223dec002ddea2"
+dependencies = [
+ "futures-util",
+ "log",
+ "tokio",
+ "tungstenite",
+]
+
+[[package]]
 name = "tokio-util"
 version = "0.6.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3567,6 +3600,25 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3528ecfd12c466c6f163363caf2d02a71161dd5e1cc6ae7b34207ea2d42d81ed"
 
 [[package]]
+name = "tungstenite"
+version = "0.20.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e862a1c4128df0112ab625f55cd5c934bcb4312ba80b39ae4b4835a3fd58e649"
+dependencies = [
+ "byteorder",
+ "bytes",
+ "data-encoding",
+ "http",
+ "httparse",
+ "log",
+ "rand",
+ "sha1",
+ "thiserror",
+ "url 2.4.1",
+ "utf-8",
+]
+
+[[package]]
 name = "typed-builder"
 version = "0.16.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3665,6 +3717,12 @@ dependencies = [
  "percent-encoding 2.3.0",
  "serde",
 ]
+
+[[package]]
+name = "utf-8"
+version = "0.7.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "09cc8ee72d2a9becf2f2febe0205bbed8fc6615b7cb429ad062dc7b7ddd036a9"
 
 [[package]]
 name = "utf8-width"
@@ -3819,6 +3877,7 @@ dependencies = [
 name = "webapp"
 version = "0.0.1"
 dependencies = [
+ "futures-util",
  "gloo",
  "leptos",
  "messages",

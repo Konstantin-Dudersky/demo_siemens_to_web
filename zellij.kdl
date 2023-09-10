@@ -34,7 +34,18 @@ layout {
             }
             pane { }
         }
-        
+    }
+
+    tab name="api-ws" cwd="./services/api-ws" {
+        pane split_direction="vertical" {
+            pane {
+                name "cargo run"
+                command "cargo"
+                args "run"
+                start_suspended true
+            }
+            pane { }
+        }
     }
 
     tab name="webapp" cwd="./services/webapp" {

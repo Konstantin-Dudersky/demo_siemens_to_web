@@ -21,7 +21,12 @@ pub async fn logging(service: &str, loki_url: &str) -> Result<(), Errors> {
         if module_path.starts_with("sqlx::query::") {
             return level <= &Level::INFO;
         }
-
+        if module_path.starts_with("tokio_tungstenite") {
+            return level <= &Level::INFO;
+        }
+        if module_path.starts_with("tungstenite") {
+            return level <= &Level::INFO;
+        }
         true
     });
 
