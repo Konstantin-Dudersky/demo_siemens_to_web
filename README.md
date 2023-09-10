@@ -1,17 +1,3 @@
-https://leptos.dev/
+[Описание](./doc/description.md)
 
-https://redis.io/
-
-```bash
-zellij --layout zellij.kdl
-```
-
-Для тестирования:
-
-- Запустить Redis на локальном компьютере
-
-```bash
-docker compose up -d
-```
-
-- Запустить симуляцию S7-1500
+[Видео](https://youtu.be/EJOGIucwo88)

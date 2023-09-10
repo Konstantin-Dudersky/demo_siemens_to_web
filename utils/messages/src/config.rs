@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types;
 
+/// Все сообщения в системе
 #[derive(Serialize, Deserialize, Debug)]
 pub enum Messages {
     MotorState(types::SingleValue<i16>),
@@ -42,6 +43,6 @@ mod tests {
     #[test]
     fn test_key() {
         let msg1 = Messages::MotorState(types::SingleValue::new(10, None));
-        assert_eq!("IntValueFromOpcUa", msg1.key());
+        assert_eq!("MotorState", msg1.key());
     }
 }
