@@ -1,5 +1,3 @@
-mod log;
-
 use std::time::Duration;
 
 use gloo::{console, net::http::Request};
@@ -21,12 +19,45 @@ async fn get_message_from_api(key: &str) -> messages::Messages {
     deserialize::<messages::Messages>(&str).unwrap()
 }
 
+#[derive(Copy, Clone, Debug)]
+struct GlobalState {
+    count: RwSignal<i32>,
+    name: RwSignal<String>,
+}
+
+impl GlobalState {
+    pub fn new() -> Self {
+        Self {
+            count: create_rw_signal(123),
+            name: create_rw_signal("Bob".to_string()),
+        }
+    }
+}
+
+#[component]
+fn TestState() -> impl IntoView {
+    let global_state = use_context::<GlobalState>().expect("no global state");
+
+    view! {
+        <p>
+            {move || {global_state.count.get()}}
+        </p>
+    }
+}
+
 #[component]
 fn App() -> impl IntoView {
+    provide_context(GlobalState::new());
+
+    let global_state = use_context::<GlobalState>().expect("no global state");
+
     let (update, set_update) = create_signal(false);
 
     set_interval(
-        move || set_update.update(|value| *value = !*value),
+        move || {
+            set_update.update(|value| *value = !*value);
+            global_state.count.update(|v| *v += 1);
+        },
         Duration::from_secs(1),
     );
 
@@ -70,6 +101,7 @@ fn App() -> impl IntoView {
 
     view! {
         <div class="container mx-auto">
+            <TestState/>
             <div class="flex flex-row">
                 <div class="basis-1/2">
                     <p class="m-4">

@@ -5,7 +5,7 @@ use serde::{Deserialize, Serialize};
 use crate::types;
 
 /// Все сообщения в системе
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
 pub enum Messages {
     MotorState(types::SingleValue<i16>),
     CommandStart(types::Command),
