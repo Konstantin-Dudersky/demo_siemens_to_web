@@ -34,16 +34,16 @@ fn App() -> impl IntoView {
                 <div class="basis-1/2">
                     <p class="m-4">
                         <State
-                            text=move || match global_state.motor_state.get() {
+                            text=move || match global_state.motor_state.get().value {
                                 0 => "Стоп".to_string(),
                                 1 => "Работа".to_string(),
                                 _ => "???".to_string(),
                             }
                             inactive=move || {
-                                global_state.motor_state.get() == 0
+                                global_state.motor_state.get().value == 0
                             }
                             active=move || {
-                                global_state.motor_state.get() == 1
+                                global_state.motor_state.get().value == 1
                             }
                         />
                     </p>
@@ -57,7 +57,7 @@ fn App() -> impl IntoView {
                 </div>
                 <div class="basis-1/2">
                     <p class="m-4">
-                        { move|| {global_state.temperature.get()}}
+                        { move|| {global_state.temperature.get().value}}
                     </p>
                 </div>
             </div>
