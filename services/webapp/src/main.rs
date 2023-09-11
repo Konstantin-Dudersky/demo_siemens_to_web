@@ -3,8 +3,7 @@ use leptos::*;
 use messages::{self};
 use webapp_lib::{define_window_url, handle_ws_connection};
 
-use webapp::{process_ws_message, GlobalState};
-mod api;
+use webapp::{api, process_ws_message, GlobalState};
 
 #[component]
 fn App() -> impl IntoView {

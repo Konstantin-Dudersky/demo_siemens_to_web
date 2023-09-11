@@ -1737,6 +1737,7 @@ version = "0.0.1"
 dependencies = [
  "chrono",
  "serde",
+ "serde_json",
 ]
 
 [[package]]
@@ -3880,7 +3881,6 @@ dependencies = [
  "gloo",
  "leptos",
  "messages",
- "serde_json",
  "tracing",
  "tracing-subscriber",
  "url 2.4.1",

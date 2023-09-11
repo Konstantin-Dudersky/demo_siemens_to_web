@@ -1,5 +1,4 @@
 use gloo::{console, net::http::Request};
-use serde_json::from_str as deserialize;
 
 use messages::Messages;
 
@@ -13,5 +12,5 @@ pub async fn get_message_from_api(key: &str) -> Messages {
     let url = format!("http://localhost:3001/value/{}", key);
     let resp = Request::get(&url).send().await.unwrap();
     let str = resp.text().await.unwrap();
-    deserialize::<Messages>(&str).unwrap()
+    Messages::deserialize(&str).unwrap()
 }

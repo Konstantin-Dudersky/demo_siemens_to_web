@@ -1,5 +1,4 @@
 use leptos::*;
-use serde_json::from_str as deserialize;
 
 use messages::Messages;
 
@@ -20,7 +19,7 @@ impl GlobalState {
 
 pub fn process_ws_message(msg: &str) {
     let global_state = use_context::<GlobalState>().expect("no global state");
-    let msg = deserialize::<Messages>(&msg).unwrap();
+    let msg = Messages::deserialize(&msg).unwrap();
     // console::log!(format!("1. {:?}", msg));
     match msg {
         Messages::MotorState(value) => {
@@ -28,8 +27,8 @@ pub fn process_ws_message(msg: &str) {
         }
         Messages::CommandStart(_) => (),
         Messages::CommandStop(_) => (),
-        Messages::SetpointRead(_) => todo!(),
-        Messages::SetpointWrite(_) => todo!(),
+        Messages::SetpointRead(_) => (),
+        Messages::SetpointWrite(_) => (),
         Messages::Temperature(value) => {
             global_state.temperature.set(value.value)
         }

@@ -1,11 +1,13 @@
 use std::fmt;
 
 use serde::{Deserialize, Serialize};
+use serde_json::{from_str as deserialize, to_string as serialize};
 
 use crate::types;
+use crate::Errors;
 
 /// Все сообщения в системе
-#[derive(Serialize, Deserialize, Debug, Clone, Copy)]
+#[derive(Serialize, Deserialize, Debug, Clone, Copy, PartialEq)]
 pub enum Messages {
     MotorState(types::SingleValue<i16>),
     CommandStart(types::Command),
@@ -26,6 +28,26 @@ impl Messages {
         };
         full_str
     }
+
+    pub fn deserialize(message: &str) -> Result<Self, Errors> {
+        match deserialize::<Self>(message) {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                let error = error.to_string();
+                Err(Errors::DeserializationError(error))
+            }
+        }
+    }
+
+    pub fn serialize(&self) -> Result<String, Errors> {
+        match serialize(&self) {
+            Ok(value) => Ok(value),
+            Err(error) => {
+                let error = error.to_string();
+                Err(Errors::SerializationError(error))
+            }
+        }
+    }
 }
 
 impl fmt::Display for Messages {
@@ -44,5 +66,15 @@ mod tests {
     fn test_key() {
         let msg1 = Messages::MotorState(types::SingleValue::new(10, None));
         assert_eq!("MotorState", msg1.key());
+    }
+
+    #[test]
+    fn ser_deser() {
+        let msg1 = Messages::MotorState(types::SingleValue::new(10, None));
+
+        let ser = msg1.serialize().unwrap();
+        let deser = Messages::deserialize(&ser).unwrap();
+
+        assert_eq!(msg1, deser);
     }
 }
