@@ -6,7 +6,7 @@ use gloo::console::info;
 use url::Url;
 use web_sys::window;
 
-use crate::errors::Errors;
+use crate::Errors;
 
 pub fn define_window_url() -> Result<Url, Errors> {
     let window = match window() {

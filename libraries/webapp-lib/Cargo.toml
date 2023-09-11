@@ -6,3 +6,5 @@ edition = "2021"
 [dependencies]
 gloo = { workspace = true }
 futures-util = { workspace = true }
+url = { workspace = true }
+web-sys = { workspace = true }

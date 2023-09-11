@@ -1,15 +1,10 @@
 use leptos::*;
-use serde_json::from_str as deserialize;
 
-use messages::{self, Messages};
-use webapp_lib::handle_ws_connection;
+use messages::{self};
+use webapp_lib::{define_window_url, handle_ws_connection};
 
+use webapp::{process_ws_message, GlobalState};
 mod api;
-mod define_window_url;
-mod errors;
-mod global_state;
-
-use global_state::GlobalState;
 
 #[component]
 fn App() -> impl IntoView {
@@ -125,8 +120,8 @@ where
 pub fn main() {
     provide_context(GlobalState::new());
 
-    let window_url = define_window_url::define_window_url()
-        .expect("Не удалось определить URL окна");
+    let window_url =
+        define_window_url().expect("Не удалось определить URL окна");
 
     let ws_url = format!("ws://{}:8081", window_url.host().unwrap());
 
@@ -135,22 +130,4 @@ pub fn main() {
     });
 
     mount_to_body(|| view! { <App/> })
-}
-
-fn process_ws_message(msg: &str) {
-    let global_state = use_context::<GlobalState>().expect("no global state");
-    let msg = deserialize::<Messages>(&msg).unwrap();
-    // console::log!(format!("1. {:?}", msg));
-    match msg {
-        Messages::MotorState(value) => {
-            global_state.motor_state.set(value.value)
-        }
-        Messages::CommandStart(_) => (),
-        Messages::CommandStop(_) => (),
-        Messages::SetpointRead(_) => todo!(),
-        Messages::SetpointWrite(_) => todo!(),
-        Messages::Temperature(value) => {
-            global_state.temperature.set(value.value)
-        }
-    };
 }
