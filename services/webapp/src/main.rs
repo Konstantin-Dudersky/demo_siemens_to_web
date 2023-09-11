@@ -1,27 +1,12 @@
-use std::time::Duration;
-
 use futures_util::StreamExt;
-use gloo::{
-    console,
-    net::{http::Request, websocket::futures::WebSocket},
-};
+use gloo::{console, net::websocket::futures::WebSocket};
 use leptos::*;
 use serde_json::from_str as deserialize;
 
-use messages::{self, types, Messages};
+use messages::{self, Messages};
 
-async fn send_message_to_api(msg: Messages) -> () {
-    let url = format!("http://localhost:3001/value/{}", msg.key());
-    let resp = Request::put(&url).json(&msg).unwrap().send().await.unwrap();
-    console::log!(resp.text().await.unwrap());
-}
-
-async fn get_message_from_api(key: &str) -> Messages {
-    let url = format!("http://localhost:3001/value/{}", key);
-    let resp = Request::get(&url).send().await.unwrap();
-    let str = resp.text().await.unwrap();
-    deserialize::<Messages>(&str).unwrap()
-}
+mod api;
+mod errors;
 
 #[derive(Copy, Clone, Debug)]
 struct GlobalState {
@@ -42,40 +27,19 @@ impl GlobalState {
 fn App() -> impl IntoView {
     let global_state = use_context::<GlobalState>().expect("no global state");
 
-    let (update, set_update) = create_signal(false);
-
-    set_interval(
-        move || {
-            set_update.update(|value| *value = !*value);
-        },
-        Duration::from_secs(1),
-    );
-
     let command_start = create_action(|_: &()| async {
         let msg = messages::Messages::CommandStart(
             messages::types::Command::new(None),
         );
-        send_message_to_api(msg).await;
+        api::send_message_to_api(msg).await;
     });
 
     let command_stop = create_action(|_: &()| async {
         let msg = messages::Messages::CommandStop(
             messages::types::Command::new(None),
         );
-        send_message_to_api(msg).await;
+        api::send_message_to_api(msg).await;
     });
-
-    // let motor_state = create_resource(
-    //     move || update.get(),
-    //     |_| async move {
-    //         let ans = get_message_from_api("MotorState").await;
-    //         if let messages::Messages::MotorState(value) = ans {
-    //             value.value
-    //         } else {
-    //             0
-    //         }
-    //     },
-    // );
 
     view! {
         <div class="container mx-auto">
@@ -87,7 +51,19 @@ fn App() -> impl IntoView {
                 </div>
                 <div class="basis-1/2">
                     <p class="m-4">
-                    <State res=global_state.motor_state/>
+                        <State
+                            text=move || match global_state.motor_state.get() {
+                                0 => "Стоп".to_string(),
+                                1 => "Работа".to_string(),
+                                _ => "???".to_string(),
+                            }
+                            inactive=move || {
+                                global_state.motor_state.get() == 0
+                            }
+                            active=move || {
+                                global_state.motor_state.get() == 1
+                            }
+                        />
                     </p>
                 </div>
             </div>
@@ -99,7 +75,7 @@ fn App() -> impl IntoView {
                 </div>
                 <div class="basis-1/2">
                     <p class="m-4">
-                        { move|| {global_state.temperature.get()} }
+                        { move|| {global_state.temperature.get()}}
                     </p>
                 </div>
             </div>
@@ -134,21 +110,24 @@ fn Button(label: String, action: Action<(), ()>) -> impl IntoView {
 }
 
 #[component]
-fn State(res: RwSignal<i16>) -> impl IntoView {
-    let text = move || match res.get() {
-        0 => "Стоп",
-        1 => "Работа",
-        _ => "Неизвестно",
-    };
-
+fn State<TText, TInactive, TActive>(
+    text: TText,
+    inactive: TInactive,
+    active: TActive,
+) -> impl IntoView
+where
+    TText: Fn() -> String + 'static + Copy,
+    TInactive: Fn() -> bool + 'static + Copy,
+    TActive: Fn() -> bool + 'static + Copy,
+{
     view! {
         <span class="inline-flex items-center rounded-md px-2 py-1 text-sm font-semibold ring-1 ring-inset ring-gray-500/10"
 
-        class=("bg-grey-50", move || {res.get() == 0})
-        class=("text-gray-600", move || {res.get() == 0})
+        class=("bg-grey-50", inactive)
+        class=("text-gray-600", inactive)
 
-        class=("bg-green-50", move || {res.get() == 1})
-        class=("text-green-700", move || {res.get() == 1})
+        class=("bg-green-50", active)
+        class=("text-green-700", active)
         >
             { text }
         </span>
@@ -160,8 +139,8 @@ pub fn main() {
 
     let global_state = use_context::<GlobalState>().expect("no global state");
 
-    let mut ws = WebSocket::open("ws://127.0.0.1:8081").unwrap();
-    let (mut write, mut read) = ws.split();
+    let ws = WebSocket::open("ws://127.0.0.1:8081").unwrap();
+    let (_, mut read) = ws.split();
 
     spawn_local(async move {
         while let Some(msg) = read.next().await {
