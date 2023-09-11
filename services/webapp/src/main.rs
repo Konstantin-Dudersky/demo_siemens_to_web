@@ -1,27 +1,15 @@
-use futures_util::StreamExt;
-use gloo::{console, net::websocket::futures::WebSocket};
 use leptos::*;
 use serde_json::from_str as deserialize;
 
 use messages::{self, Messages};
+use webapp_lib::handle_ws_connection;
 
 mod api;
+mod define_window_url;
 mod errors;
+mod global_state;
 
-#[derive(Copy, Clone, Debug)]
-struct GlobalState {
-    temperature: RwSignal<f64>,
-    motor_state: RwSignal<i16>,
-}
-
-impl GlobalState {
-    pub fn new() -> Self {
-        Self {
-            temperature: create_rw_signal(0.0),
-            motor_state: create_rw_signal(0),
-        }
-    }
-}
+use global_state::GlobalState;
 
 #[component]
 fn App() -> impl IntoView {
@@ -137,38 +125,32 @@ where
 pub fn main() {
     provide_context(GlobalState::new());
 
-    let global_state = use_context::<GlobalState>().expect("no global state");
+    let window_url = define_window_url::define_window_url()
+        .expect("Не удалось определить URL окна");
 
-    let ws = WebSocket::open("ws://127.0.0.1:8081").unwrap();
-    let (_, mut read) = ws.split();
+    let ws_url = format!("ws://{}:8081", window_url.host().unwrap());
 
     spawn_local(async move {
-        while let Some(msg) = read.next().await {
-            if let Ok(msg) = msg {
-                let msg = match msg {
-                    gloo::net::websocket::Message::Text(value) => value,
-                    gloo::net::websocket::Message::Bytes(_) => {
-                        "123".to_string()
-                    }
-                };
-                let msg = deserialize::<Messages>(&msg).unwrap();
-                // console::log!(format!("1. {:?}", msg));
-                match msg {
-                    Messages::MotorState(value) => {
-                        global_state.motor_state.set(value.value)
-                    }
-                    Messages::CommandStart(_) => (),
-                    Messages::CommandStop(_) => (),
-                    Messages::SetpointRead(_) => todo!(),
-                    Messages::SetpointWrite(_) => todo!(),
-                    Messages::Temperature(value) => {
-                        global_state.temperature.set(value.value)
-                    }
-                };
-            };
-        }
-        console::log!("WebSocket Closed")
+        handle_ws_connection(&ws_url, process_ws_message).await;
     });
 
     mount_to_body(|| view! { <App/> })
+}
+
+fn process_ws_message(msg: &str) {
+    let global_state = use_context::<GlobalState>().expect("no global state");
+    let msg = deserialize::<Messages>(&msg).unwrap();
+    // console::log!(format!("1. {:?}", msg));
+    match msg {
+        Messages::MotorState(value) => {
+            global_state.motor_state.set(value.value)
+        }
+        Messages::CommandStart(_) => (),
+        Messages::CommandStop(_) => (),
+        Messages::SetpointRead(_) => todo!(),
+        Messages::SetpointWrite(_) => todo!(),
+        Messages::Temperature(value) => {
+            global_state.temperature.set(value.value)
+        }
+    };
 }

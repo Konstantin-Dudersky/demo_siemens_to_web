@@ -1,8 +1,9 @@
 [workspace]
 members = [
-    "libraries/redis-client",
-    "libraries/opcua-client-lib",
     "libraries/db-saver-lib",
+    "libraries/opcua-client-lib",
+    "libraries/redis-client",
+    "libraries/webapp-lib",
     "services/api",
     "services/api-ws",
     "services/db-saver",
@@ -36,8 +37,9 @@ tower-http = { version = "0.4", features = ["cors"] }
 tokio-tungstenite = { version = "0.20" }
 
 # wasm
-gloo = { version = "0.10", features = ["console", "net"] }
+gloo = { version = "0.10", features = ["console", "net", "utils"] }
 leptos = { version = "0.5.0-beta2", features = ["csr", "tracing"] }
+web-sys = { version = "0.3", features = ["Location", "Window"] }
 
 # логгирование
 tracing = { version = "0.1" }
@@ -53,12 +55,13 @@ toml = { version = "0.7" }
 url = { version = "2.4", features = ["serde"] }
 
 # мои пакеты
+db-saver-lib = { path = "./libraries/db-saver-lib" }
 opcua-client-lib = { path = "./libraries/opcua-client-lib" }
 redis-client = { path = "./libraries/redis-client" }
+webapp-lib = { path = "./libraries/webapp-lib" }
 env_vars = { path = "./utils/env_vars" }
 logging = { path = "./utils/logging" }
 messages = { path = "./utils/messages" }
-db-saver-lib = { path = "./libraries/db-saver-lib" }
 
 # dev-dependencies
 ntest = { version = "0.9" }

@@ -3877,13 +3877,23 @@ dependencies = [
 name = "webapp"
 version = "0.0.1"
 dependencies = [
- "futures-util",
  "gloo",
  "leptos",
  "messages",
  "serde_json",
  "tracing",
  "tracing-subscriber",
+ "url 2.4.1",
+ "web-sys",
+ "webapp-lib",
+]
+
+[[package]]
+name = "webapp-lib"
+version = "0.0.1"
+dependencies = [
+ "futures-util",
+ "gloo",
 ]
 
 [[package]]
