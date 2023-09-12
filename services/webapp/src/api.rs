@@ -2,8 +2,10 @@ use gloo::{console, net::http::Request};
 
 use messages::Messages;
 
-pub async fn send_message_to_api(msg: Messages) -> () {
-    let url = format!("http://localhost:3001/value/{}", msg.key());
+// http://localhost:3001/value/
+
+pub async fn send_message_to_api(api_url: &str, msg: Messages) -> () {
+    let url = format!("{}{}", api_url, msg.key());
     let resp = Request::put(&url).json(&msg).unwrap().send().await.unwrap();
     console::log!(resp.text().await.unwrap());
 }

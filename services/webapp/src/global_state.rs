@@ -1,9 +1,15 @@
+use std::str::FromStr;
+
 use leptos::*;
+use url::Url;
 
 use messages::{types, Messages};
 
 #[derive(Copy, Clone, Debug)]
 pub struct GlobalState {
+    pub send_msg: RwSignal<Option<Messages>>,
+    pub window_url: RwSignal<Url>,
+    pub api_url: RwSignal<String>,
     pub temperature: RwSignal<types::SingleValue<f64>>,
     pub motor_state: RwSignal<types::SingleValue<i16>>,
 }
@@ -11,8 +17,14 @@ pub struct GlobalState {
 impl GlobalState {
     pub fn new() -> Self {
         Self {
-            temperature: create_rw_signal(types::SingleValue::new(0.0, None)),
-            motor_state: create_rw_signal(types::SingleValue::new(0, None)),
+            send_msg: create_rw_signal(None),
+            window_url: create_rw_signal(
+                Url::from_str("http://localhost").unwrap(),
+            ),
+            api_url: create_rw_signal("".to_string()),
+
+            temperature: create_rw_signal(types::SingleValue::default()),
+            motor_state: create_rw_signal(types::SingleValue::default()),
         }
     }
 }
@@ -20,7 +32,6 @@ impl GlobalState {
 pub fn process_ws_message(msg: &str) {
     let global_state = use_context::<GlobalState>().expect("no global state");
     let msg = Messages::deserialize(&msg).unwrap();
-    // console::log!(format!("1. {:?}", msg));
     match msg {
         Messages::MotorState(value) => global_state.motor_state.set(value),
         Messages::CommandStart(_) => (),

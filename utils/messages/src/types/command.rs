@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use chrono::{DateTime, FixedOffset, Utc};
 
-#[derive(Serialize, Clone, Deserialize, Debug, Copy, PartialEq)]
+#[derive(Serialize, Clone, Deserialize, Debug, Copy, PartialEq, Default)]
 pub struct Command {
     pub ts: DateTime<FixedOffset>,
 }
