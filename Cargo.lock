@@ -102,7 +102,6 @@ dependencies = [
  "logging",
  "messages",
  "redis-client",
- "serde_json",
  "tokio",
  "tokio-tungstenite",
  "tracing",

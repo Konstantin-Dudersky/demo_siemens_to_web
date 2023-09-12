@@ -64,6 +64,37 @@ impl RedisPubAsync {
             Err(error) => Err(Errors::DeserializeError(error.to_string())),
         }
     }
+
+    /// Получение всех значений из хеша
+    pub async fn hvals<V>(&mut self) -> Result<Vec<V>, Errors>
+    where
+        V: DeserializeOwned,
+    {
+        let values: Result<Vec<String>, redis::RedisError> =
+            self.connection.hvals(&self.channel).await;
+        let values = match values {
+            Ok(values) => values,
+            Err(error) => match error.kind() {
+                redis::ErrorKind::TypeError => {
+                    return Err(Errors::FieldNotFoundError(error.to_string()))
+                }
+                _ => {
+                    return Err(Errors::RedisConnectionError(error.to_string()))
+                }
+            },
+        };
+        let mut result = vec![];
+        for msg in values {
+            let msg = match deserialize::<V>(&msg) {
+                Ok(value) => value,
+                Err(error) => {
+                    return Err(Errors::DeserializeError(error.to_string()))
+                }
+            };
+            result.push(msg);
+        }
+        Ok(result)
+    }
 }
 
 // test ------------------------------------------------------------------------
@@ -75,9 +106,10 @@ mod tests {
     use super::*;
     use serde::Deserialize;
 
-    async fn create_connection() -> RedisPubAsync {
+    async fn create_connection(channel: Option<&str>) -> RedisPubAsync {
+        let channel = channel.unwrap_or("test_redis_pub_async");
         let url = Url::from_str("redis://127.0.0.1/").unwrap();
-        RedisPubAsync::new(&url, "test_hash")
+        RedisPubAsync::new(&url, channel)
             .await
             .expect("Соединение не создано")
     }
@@ -99,13 +131,13 @@ mod tests {
     /// Проверяем создание подключения
     #[tokio::test]
     async fn test_new() {
-        create_connection().await;
+        create_connection(None).await;
     }
 
     /// Записываем и читаем простые типы данных
     #[tokio::test]
     async fn set_get_base_types() {
-        let mut hash = create_connection().await;
+        let mut hash = create_connection(None).await;
 
         set_and_get(&mut hash, "string_field", "string value".to_string())
             .await;
@@ -140,7 +172,7 @@ mod tests {
                 memeber_in_child: "child field".to_string(),
             },
         };
-        let mut hash = create_connection().await;
+        let mut hash = create_connection(None).await;
         set_and_get(&mut hash, "struct", item1).await;
     }
 
@@ -165,7 +197,7 @@ mod tests {
     /// Читаем из существующего хеша несуществующее поле
     #[tokio::test]
     async fn get_from_notexist_field() {
-        let mut hash = create_connection().await;
+        let mut hash = create_connection(None).await;
         // создаем поле, чтобы убедиться, что хеш создан
         hash.set("field_for_hash_create", 10).await.unwrap();
         match hash.get::<i32>("no_created_field").await {
@@ -177,5 +209,18 @@ mod tests {
                 _ => panic!("Неправильный тип ошибки: {error:?}"),
             },
         };
+    }
+
+    /// Читаем все значения из хеша
+    #[tokio::test]
+    async fn hvals() {
+        let mut hash = create_connection(Some("test_hvals_async")).await;
+        hash.set("field1", "value1").await.unwrap();
+        hash.set("field2", "value2").await.unwrap();
+        let msgs = hash.hvals::<String>().await.unwrap();
+
+        assert!(msgs.contains(&"value1".to_string()));
+        assert!(msgs.contains(&"value2".to_string()));
+        assert_eq!(msgs.len(), 2);
     }
 }

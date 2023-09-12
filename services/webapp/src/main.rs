@@ -133,7 +133,6 @@ pub fn main() {
 
     let window_url =
         define_window_url().expect("Не удалось определить URL окна");
-
     global_state.window_url.set(window_url.clone());
 
     let api_url = format!("http://{}:3001/value/", window_url.host().unwrap());

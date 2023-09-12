@@ -1,7 +1,6 @@
 use std::net::SocketAddr;
 
 use futures_util::SinkExt;
-use serde_json::to_string as serialize;
 use tokio::{
     main,
     net::{TcpListener, TcpStream},
@@ -25,7 +24,7 @@ async fn main() {
         .await
         .expect("Error in logger initialization");
 
-    let (tx, mut rx) = mpsc::channel::<Messages>(32);
+    let (tx, mut rx) = mpsc::channel::<Messages>(128);
 
     let config_clone = config.clone();
     let sp1 = spawn(async move {
@@ -76,7 +75,7 @@ async fn handle_connection(
         .expect("Error during the websocket handshake occurred");
     info!("WebSocket connection established: {:?}", addr);
     while let Ok(msg) = rx.recv().await {
-        let msg = serialize(&msg).unwrap();
+        let msg = msg.serialize().unwrap();
         ws_stream.send(msg.into()).await.unwrap();
     }
 }
