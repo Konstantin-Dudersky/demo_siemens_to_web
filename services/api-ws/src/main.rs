@@ -39,7 +39,7 @@ async fn main() {
     });
 
     let _ = spawn(async move {
-        let addr = "127.0.0.1:8081";
+        let addr = "0.0.0.0:8081";
 
         let try_socket = TcpListener::bind(addr).await;
         let listener = try_socket.expect("Failed to bind");

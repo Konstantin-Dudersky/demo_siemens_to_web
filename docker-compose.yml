@@ -61,6 +61,15 @@ services:
     networks:
       - demo_siemens_to_web_net
 
+  webapp:
+    container_name: webapp
+    hostname: webapp
+    image: nginx
+    ports:
+      - "${WEBAPP_PORT}:80"
+    volumes:
+      - ./services/webapp/dist:/usr/share/nginx/html
+
 volumes:
   db_volume:
     name: db_volume
