@@ -1,4 +1,4 @@
-use std::net::SocketAddr;
+use std::{net::SocketAddr, str::FromStr};
 
 use futures_util::SinkExt;
 use tokio::{
@@ -14,7 +14,8 @@ use tracing::info;
 
 use logging::logging;
 use messages::Messages;
-use redis_client::start_redis_subscription_async;
+use redis_client::{start_redis_subscription_async, RedisPubAsync};
+use url::Url;
 
 #[main]
 async fn main() {
@@ -55,8 +56,16 @@ async fn main() {
 
         while let Ok((stream, addr)) = listener.accept().await {
             let mut rx_clone = tx.subscribe();
+            let config_clone = config.clone();
             tokio::spawn(async move {
-                handle_connection(stream, addr, &mut rx_clone).await;
+                handle_connection(
+                    stream,
+                    addr,
+                    &mut rx_clone,
+                    config_clone.redis_url,
+                    config_clone.redis_channel,
+                )
+                .await;
             });
         }
     });
@@ -68,12 +77,22 @@ async fn handle_connection(
     raw_stream: TcpStream,
     addr: SocketAddr,
     rx: &mut Receiver<Messages>,
+    redis_url: Url,
+    redis_channel: String,
 ) {
     info!("Incoming TCP connection from: {}", addr);
     let mut ws_stream = tokio_tungstenite::accept_async(raw_stream)
         .await
         .expect("Error during the websocket handshake occurred");
     info!("WebSocket connection established: {:?}", addr);
+    let mut redis = RedisPubAsync::new(&redis_url, &redis_channel)
+        .await
+        .unwrap();
+    let msgs: Vec<Messages> = redis.hvals().await.unwrap();
+    for msg in msgs {
+        let msg = msg.serialize().unwrap();
+        ws_stream.send(msg.into()).await.unwrap();
+    }
     while let Ok(msg) = rx.recv().await {
         let msg = msg.serialize().unwrap();
         ws_stream.send(msg.into()).await.unwrap();

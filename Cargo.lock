@@ -105,6 +105,7 @@ dependencies = [
  "tokio",
  "tokio-tungstenite",
  "tracing",
+ "url 2.4.1",
 ]
 
 [[package]]
