@@ -48,6 +48,21 @@ layout {
         }
     }
 
+    tab name="db-saver" cwd="./services/db-saver" {
+    }
+
+    tab name="opcua-client" cwd="./services/opcua-client" {
+        pane split_direction="vertical" {
+            pane {
+                name "cargo run"
+                command "cargo"
+                args "run"
+                start_suspended true
+            }
+            pane { }
+        }
+    }
+
     tab name="webapp" cwd="./services/webapp" {
         pane split_direction="vertical" {
             pane split_direction="horizontal" {
@@ -65,17 +80,5 @@ layout {
             }
             pane { }
         }
-    }
-
-    tab name="messages" cwd="./utils/messages" {
-    }
-
-    tab name="redis-client" cwd="./libraries/redis-client" {
-    }
-
-    tab name="opcua-client" cwd="./services/opcua-client" {
-    }
-
-    tab name="db-saver" cwd="./services/db-saver" {
     }
 }

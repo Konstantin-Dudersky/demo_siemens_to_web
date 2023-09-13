@@ -4,29 +4,39 @@ use tracing_subscriber::{filter::FilterFn, prelude::*};
 
 use crate::errors::Errors;
 
-pub async fn logging(service: &str, loki_url: &str) -> Result<(), Errors> {
-    let my_filter = FilterFn::new(|metadata| {
-        let level = metadata.level();
+pub async fn configure_logging(
+    service: &str,
+    loki_url: &str,
+    min_level: Level,
+) -> Result<(), Errors> {
+    let min_level_clone = min_level.clone();
+    let my_filter = FilterFn::new(move |metadata| {
+        let level = *metadata.level();
         let module_path = metadata.module_path().unwrap_or_default();
 
         if module_path.starts_with("hyper::") {
-            return level <= &Level::INFO;
+            return level <= Level::INFO;
         }
         if module_path.starts_with("opcua::") {
-            return level <= &Level::WARN;
+            return level <= Level::WARN;
         }
         if module_path.starts_with("tokio_util::") {
-            return level <= &Level::INFO;
+            return level <= Level::INFO;
         }
         if module_path.starts_with("sqlx::query::") {
-            return level <= &Level::INFO;
+            return level <= Level::INFO;
         }
         if module_path.starts_with("tokio_tungstenite") {
-            return level <= &Level::INFO;
+            return level <= Level::INFO;
         }
         if module_path.starts_with("tungstenite") {
-            return level <= &Level::INFO;
+            return level <= Level::INFO;
         }
+
+        if level > min_level_clone {
+            return false;
+        }
+
         true
     });
 

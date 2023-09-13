@@ -11,6 +11,8 @@ pub fn load() -> Result<Config, Errors> {
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
+    pub api_ws_port: u16,
+
     // Для статической проверки SQL-запросов, не переименовывать
     pub database_url: Url,
 
@@ -36,6 +38,8 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
+            api_ws_port: 8081,
+
             loki_port: 3100,
             loki_url: Url::from_str("http://localhost:3100").unwrap(),
             opcua_url: Url::from_str("opc.tcp://192.168.101.180:4840/")

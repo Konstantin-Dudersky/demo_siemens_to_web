@@ -6,11 +6,11 @@ use std::{
 };
 
 use tokio::main;
-use tracing::{error, info};
+use tracing::{error, info, Level};
 use url::Url;
 
 use env_vars;
-use logging::logging;
+use logging::configure_logging;
 use messages::Messages;
 use opcua_client::config;
 use opcua_client_lib::{subscribe, Errors, ValueFromOpcUa};
@@ -20,7 +20,7 @@ use redis_client::{start_redis_subscription, RedisPubSync};
 async fn main() {
     let config = env_vars::load().expect("Setting not loaded");
 
-    logging("opcua-client", config.loki_url.as_str())
+    configure_logging("opcua-client", config.loki_url.as_str(), Level::INFO)
         .await
         .expect("Error in logger initialization");
 

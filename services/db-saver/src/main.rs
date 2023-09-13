@@ -4,7 +4,7 @@ use tokio::{main, spawn, sync::mpsc};
 
 use db_saver_lib::save_row_in_db;
 use env_vars;
-use logging::logging;
+use logging::configure_logging;
 use messages::Messages;
 
 mod config;
@@ -13,7 +13,7 @@ mod config;
 async fn main() {
     let config = env_vars::load().expect("Settings not loaded");
 
-    logging("db-saver", config.loki_url.as_str())
+    configure_logging("db-saver", config.loki_url.as_str())
         .await
         .expect("Error in logger initialization");
 
