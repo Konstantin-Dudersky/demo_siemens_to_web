@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use chrono::{DateTime, FixedOffset, Utc};
 
-#[derive(Serialize, Clone, Deserialize, Debug, Copy, PartialEq, Default)]
+#[derive(Serialize, Clone, Deserialize, Debug, Copy, PartialEq)]
 pub struct Command {
     pub ts: DateTime<FixedOffset>,
 }
@@ -14,5 +14,13 @@ impl Command {
             None => Utc::now().into(),
         };
         Self { ts: ts }
+    }
+}
+
+impl Default for Command {
+    fn default() -> Self {
+        Self {
+            ts: Utc::now().into(),
+        }
     }
 }

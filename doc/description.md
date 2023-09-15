@@ -39,6 +39,12 @@
 
 Используется веб-фреймворк [axum](https://github.com/tokio-rs/axum)
 
+### websocket
+
+Рассылка актуальных данных по протоколу Websocket. Подписывается на канал Redis и рассылает данные клиентам webapp.
+
+Используется библиотека [tokio-tungstenite](https://github.com/snapview/tokio-tungstenite)
+
 ### webapp
 
 Веб-приложение пользователя. Пишется на Rust и компилирутся в WebAssembly.

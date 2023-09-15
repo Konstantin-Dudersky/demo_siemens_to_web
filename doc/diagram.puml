@@ -7,6 +7,7 @@ title demo_siemens_to_web
 
 Container(webapp, "webapp", "Leptos, WASM", "", $sprite="rust")
 Container(api, "api", "axum", "", $sprite="rust")
+Container(websocket, "websocket", $sprite="rust")
 Container(redis, "redis", "Hash, PubSub", "", $sprite="redis")
 Container(db_saver, "db-saver", "sqlx", "", $sprite="rust")
 Container(db, "db", "PostgreSQL, TimeseriesDB", "", $sprite="postgresql")
@@ -17,6 +18,8 @@ Container(plc, "plc", "Siemens", "")
 
 
 Rel(webapp, api, "http query")
+Rel_Back(webapp, websocket, "push")
+Rel_Back(websocket, redis, "subscription")
 Rel(api, redis, "get hash")
 Rel_Neighbor(redis, db_saver, "subscription")
 Rel_Neighbor(db_saver, db, "save")

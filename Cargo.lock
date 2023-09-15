@@ -3856,6 +3856,7 @@ version = "0.0.1"
 dependencies = [
  "futures-util",
  "gloo",
+ "leptos",
  "url 2.4.1",
  "web-sys",
 ]
