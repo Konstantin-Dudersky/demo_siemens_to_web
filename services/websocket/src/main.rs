@@ -4,8 +4,8 @@ use tokio::{main, time::sleep};
 use tokio_util::sync::CancellationToken;
 use tracing::{error, info, warn, Level};
 
-use api_ws::{tasks, Errors};
 use logging::configure_logging;
+use websocket::{tasks, Errors};
 
 #[main]
 async fn main() {

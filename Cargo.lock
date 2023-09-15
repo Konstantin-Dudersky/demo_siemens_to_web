@@ -95,24 +95,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "api-ws"
-version = "0.0.1"
-dependencies = [
- "env_vars",
- "futures-util",
- "logging",
- "messages",
- "redis-client",
- "serde",
- "serde_json",
- "tokio",
- "tokio-tungstenite",
- "tokio-util 0.7.8",
- "tracing",
- "url 2.4.1",
-]
-
-[[package]]
 name = "async-recursion"
 version = "1.0.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3876,6 +3858,24 @@ dependencies = [
  "gloo",
  "url 2.4.1",
  "web-sys",
+]
+
+[[package]]
+name = "websocket"
+version = "0.0.1"
+dependencies = [
+ "env_vars",
+ "futures-util",
+ "logging",
+ "messages",
+ "redis-client",
+ "serde",
+ "serde_json",
+ "tokio",
+ "tokio-tungstenite",
+ "tokio-util 0.7.8",
+ "tracing",
+ "url 2.4.1",
 ]
 
 [[package]]

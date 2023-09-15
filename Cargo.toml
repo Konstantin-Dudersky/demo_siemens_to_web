@@ -5,7 +5,7 @@ members = [
     "libraries/redis-client",
     "libraries/webapp-lib",
     "services/api",
-    "services/api-ws",
+    "services/websocket",
     "services/db-saver",
     "services/opcua-client",
     "services/webapp",

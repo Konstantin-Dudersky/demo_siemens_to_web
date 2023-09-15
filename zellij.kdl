@@ -36,18 +36,6 @@ layout {
         }
     }
 
-    tab name="api-ws" cwd="./services/api-ws" {
-        pane split_direction="vertical" {
-            pane {
-                name "cargo run"
-                command "cargo"
-                args "run"
-                start_suspended true
-            }
-            pane { }
-        }
-    }
-
     tab name="db-saver" cwd="./services/db-saver" {
     }
 
@@ -77,6 +65,18 @@ layout {
                     command "npx"
                     args "tailwindcss" "-i" "./input.css" "-o" "./style/output.css" "--watch"
                 }
+            }
+            pane { }
+        }
+    }
+
+    tab name="websocket" cwd="./services/websocket" {
+        pane split_direction="vertical" {
+            pane {
+                name "cargo run"
+                command "cargo"
+                args "run"
+                start_suspended true
             }
             pane { }
         }
