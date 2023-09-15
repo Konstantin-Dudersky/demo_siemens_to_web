@@ -1,12 +1,15 @@
-use api::app;
+use tracing::Level;
+
 use logging::configure_logging;
 use redis_client::RedisPubAsync;
+
+use api::app;
 
 #[tokio::main]
 async fn main() {
     let config = env_vars::load().expect("Setting not loaded");
 
-    configure_logging("api", config.loki_url.as_str())
+    configure_logging("api", config.loki_url.as_str(), Level::INFO)
         .await
         .expect("Error in logger initialization");
 

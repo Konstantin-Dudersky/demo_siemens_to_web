@@ -1,11 +1,12 @@
-use redis_client::start_redis_subscription_async;
 use sqlx::postgres::PgPoolOptions;
 use tokio::{main, spawn, sync::mpsc};
+use tracing::Level;
 
 use db_saver_lib::save_row_in_db;
 use env_vars;
 use logging::configure_logging;
 use messages::Messages;
+use redis_client::start_redis_subscription_async;
 
 mod config;
 
@@ -13,7 +14,7 @@ mod config;
 async fn main() {
     let config = env_vars::load().expect("Settings not loaded");
 
-    configure_logging("db-saver", config.loki_url.as_str())
+    configure_logging("db-saver", config.loki_url.as_str(), Level::INFO)
         .await
         .expect("Error in logger initialization");
 
@@ -27,9 +28,9 @@ async fn main() {
     let config_clone = config.clone();
     let sp1 = spawn(async move {
         start_redis_subscription_async(
-            &config_clone.redis_url,
-            &config_clone.redis_channel,
-            &tx,
+            config_clone.redis_url,
+            config_clone.redis_channel,
+            tx,
         )
         .await
         .unwrap();

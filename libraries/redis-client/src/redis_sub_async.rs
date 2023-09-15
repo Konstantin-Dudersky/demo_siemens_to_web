@@ -13,9 +13,9 @@ use crate::errors::Errors;
 
 /// Подписка на сообщения из Redis. Вызывать из задачи Tokio.
 pub async fn start_redis_subscription_async<V>(
-    url: &Url,
-    channel: &str,
-    tx: &Sender<V>,
+    url: Url,
+    channel: String,
+    tx: Sender<V>,
 ) -> Result<(), Errors>
 where
     V: DeserializeOwned + std::fmt::Debug,
@@ -67,7 +67,7 @@ mod tests {
         // запускаем задачу с подпиской
         let url_clone = url.clone();
         let _ = spawn(async move {
-            start_redis_subscription_async(&url_clone, channel, &tx)
+            start_redis_subscription_async(url_clone, channel.to_string(), tx)
                 .await
                 .expect("");
         });

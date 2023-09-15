@@ -18,7 +18,7 @@ async fn main() {
     let (tx, mut rx) = mpsc::channel::<String>(32);
 
     let sp1 = spawn(async move {
-        start_redis_subscription_async(&url, channel, &tx)
+        start_redis_subscription_async(url, channel.to_string(), tx)
             .await
             .unwrap();
     });

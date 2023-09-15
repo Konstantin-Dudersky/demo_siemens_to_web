@@ -1,5 +1,4 @@
 use std::io::Error as StdIoError;
-use tokio::task::JoinError;
 use tokio_tungstenite::tungstenite::Error as WsError;
 
 use messages::Errors as MessagesError;
@@ -13,7 +12,7 @@ pub enum Errors {
     WsError(WsError),
     BindToPortError(StdIoError),
     RedisError(RedisErrors),
-    TokioTaskHandleError(JoinError),
+    TokioTaskHandleError,
 }
 
 impl From<MessagesError> for Errors {

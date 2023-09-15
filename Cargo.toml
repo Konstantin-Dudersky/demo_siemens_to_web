@@ -21,6 +21,7 @@ chrono = { version = "0.4", features = ["serde"] }
 opcua = { version = "0.11", features = ["client"] }
 redis = { version = "0.23.2", features = ["tokio-comp"] }
 tokio = { version = "1", features = ["full"] }
+tokio-util = { version = "0.7" }
 # для асинхронной подписки PubSub в Redis
 futures-util = { version = "0.3" }
 sqlx = { version = "0.7", features = [
@@ -51,7 +52,7 @@ dotenvy = { version = "0.15" }
 envy = { version = "0.4" }
 serde = { version = "1", features = ["derive"] }
 serde_json = { version = "1" }
-toml = { version = "0.7" }
+toml = { version = "0.8" }
 url = { version = "2.4", features = ["serde"] }
 
 # мои пакеты
