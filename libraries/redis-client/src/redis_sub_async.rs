@@ -1,5 +1,7 @@
 //! Реализация подписки на сообщения, асинхронная
 
+use std::fmt::Debug;
+
 use tokio::sync::mpsc::Sender;
 
 use serde::de::DeserializeOwned;
@@ -18,7 +20,7 @@ pub async fn start_redis_subscription_async<V>(
     tx: Sender<V>,
 ) -> Result<(), Errors>
 where
-    V: DeserializeOwned + std::fmt::Debug,
+    V: Debug + DeserializeOwned,
 {
     let client = redis::Client::open(url.to_string())?;
     let connection = client.get_async_connection().await?;

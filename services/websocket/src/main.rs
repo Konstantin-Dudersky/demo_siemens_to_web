@@ -5,7 +5,8 @@ use tokio_util::sync::CancellationToken;
 use tracing::{error, info, warn, Level};
 
 use logging::configure_logging;
-use websocket::{tasks, Errors};
+use messages::Messages;
+use websocket_lib::{tasks, Errors};
 
 #[main]
 async fn main() {
@@ -17,7 +18,13 @@ async fn main() {
 
     loop {
         let cancel = CancellationToken::new();
-        let result = tasks::task_main(&config, cancel.clone()).await;
+        let result = tasks::task_main::<Messages>(
+            config.redis_url.clone(),
+            config.redis_channel.clone(),
+            config.api_ws_port,
+            cancel.clone(),
+        )
+        .await;
         match result {
             Ok(_) => (),
             Err(error) => match error {

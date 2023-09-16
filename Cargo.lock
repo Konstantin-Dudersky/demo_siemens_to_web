@@ -3917,9 +3917,19 @@ name = "websocket"
 version = "0.0.1"
 dependencies = [
  "env_vars",
- "futures-util",
  "logging",
  "messages",
+ "tokio",
+ "tokio-util 0.7.8",
+ "tracing",
+ "websocket-lib",
+]
+
+[[package]]
+name = "websocket-lib"
+version = "0.0.1"
+dependencies = [
+ "futures-util",
  "redis-client",
  "serde",
  "serde_json",

@@ -1,6 +1,6 @@
+use serde::de::DeserializeOwned;
 use url::Url;
 
-use messages::Messages;
 use redis_client::RedisPubAsync;
 
 use crate::Errors;
@@ -8,10 +8,13 @@ use crate::Errors;
 /// Загрузка всех сообщений из Redis
 /// При подключении нового клиента сначала выдаются все данные, затем только
 /// изменившиеся
-pub async fn load_all_messages_from_hash(
+pub async fn load_all_messages_from_hash<M>(
     redis_url: Url,
     redis_channel: String,
-) -> Result<Vec<Messages>, Errors> {
+) -> Result<Vec<M>, Errors>
+where
+    M: DeserializeOwned,
+{
     // create redis connection
     let redis = RedisPubAsync::new(&redis_url, &redis_channel).await;
     let mut redis = match redis {

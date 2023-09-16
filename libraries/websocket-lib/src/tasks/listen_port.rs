@@ -1,3 +1,6 @@
+use std::fmt;
+
+use serde::{de::DeserializeOwned, Serialize};
 use tokio::{
     net::TcpListener,
     spawn,
@@ -7,17 +10,18 @@ use tokio_util::sync::CancellationToken;
 use tracing::info;
 use url::Url;
 
-use messages::Messages;
-
 use crate::{cancellable_task, Errors};
 
-pub async fn listen_port(
+pub async fn listen_port<M>(
     cancel: CancellationToken,
-    rx_from_redis: mpsc::Receiver<Messages>,
+    rx_from_redis: mpsc::Receiver<M>,
     api_ws_port: u16,
     redis_url: Url,
     redis_channel: String,
-) -> Result<(), Errors> {
+) -> Result<(), Errors>
+where
+    M: Clone + fmt::Debug + DeserializeOwned + Send + Serialize + 'static,
+{
     let addr = format!("0.0.0.0:{}", api_ws_port);
 
     let listener = create_tcp_listener(addr).await?;

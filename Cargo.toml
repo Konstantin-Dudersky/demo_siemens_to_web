@@ -4,6 +4,7 @@ members = [
     "libraries/opcua-client-lib",
     "libraries/redis-client",
     "libraries/webapp-lib",
+    "libraries/websocket-lib",
     "services/api",
     "services/websocket",
     "services/db-saver",
@@ -61,6 +62,7 @@ db-saver-lib = { path = "./libraries/db-saver-lib" }
 opcua-client-lib = { path = "./libraries/opcua-client-lib" }
 redis-client = { path = "./libraries/redis-client" }
 webapp-lib = { path = "./libraries/webapp-lib" }
+websocket-lib = { path = "./libraries/websocket-lib" }
 env_vars = { path = "./utils/env_vars" }
 logging = { path = "./utils/logging" }
 messages = { path = "./utils/messages" }
