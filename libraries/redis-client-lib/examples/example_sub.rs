@@ -6,7 +6,7 @@ use std::thread;
 
 use tokio::main;
 
-use redis_client::{start_redis_subscription, RedisPubAsync};
+use redis_client_lib::{start_redis_subscription, RedisPubAsync};
 use url::Url;
 
 #[main]

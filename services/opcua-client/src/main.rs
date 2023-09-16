@@ -14,7 +14,7 @@ use logging::configure_logging;
 use messages::Messages;
 use opcua_client::config;
 use opcua_client_lib::{subscribe, Errors, ValueFromOpcUa};
-use redis_client::{start_redis_subscription, RedisPubSync};
+use redis_client_lib::{start_redis_subscription, RedisPubSync};
 
 #[main]
 async fn main() {

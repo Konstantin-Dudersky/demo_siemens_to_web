@@ -85,7 +85,7 @@ dependencies = [
  "env_vars",
  "logging",
  "messages",
- "redis-client",
+ "redis-client-lib",
  "serde",
  "serde_json",
  "tokio",
@@ -572,7 +572,7 @@ dependencies = [
  "env_vars",
  "logging",
  "messages",
- "redis-client",
+ "redis-client-lib",
  "sqlx",
  "tokio",
  "tracing",
@@ -1962,7 +1962,7 @@ dependencies = [
  "messages",
  "opcua",
  "opcua-client-lib",
- "redis-client",
+ "redis-client-lib",
  "tokio",
  "tracing",
  "url 2.4.1",
@@ -1974,7 +1974,7 @@ version = "0.0.1"
 dependencies = [
  "chrono",
  "opcua",
- "redis-client",
+ "redis-client-lib",
  "tracing",
 ]
 
@@ -2430,7 +2430,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "redis-client"
+name = "redis-client-lib"
 version = "0.0.1"
 dependencies = [
  "futures-util",
@@ -3930,7 +3930,7 @@ name = "websocket-lib"
 version = "0.0.1"
 dependencies = [
  "futures-util",
- "redis-client",
+ "redis-client-lib",
  "serde",
  "serde_json",
  "tokio",

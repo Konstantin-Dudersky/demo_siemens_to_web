@@ -3,7 +3,7 @@ use std::fmt;
 use chrono::ParseError;
 use opcua::client::prelude::StatusCode;
 
-use redis_client::Errors as RedisErrors;
+use redis_client_lib::Errors as RedisErrors;
 
 #[derive(Debug)]
 pub enum Errors {

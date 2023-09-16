@@ -5,7 +5,7 @@ use std::str::FromStr;
 use tokio::main;
 use url::Url;
 
-use redis_client::RedisPubAsync;
+use redis_client_lib::RedisPubAsync;
 
 #[derive(Debug)]
 enum Tags {

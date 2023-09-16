@@ -4,7 +4,7 @@ use axum::routing;
 use tokio::sync::Mutex;
 use tower_http::cors::CorsLayer;
 
-use redis_client::RedisPubAsync;
+use redis_client_lib::RedisPubAsync;
 
 use crate::{routes, state};
 

@@ -1,7 +1,7 @@
 use tracing::Level;
 
 use logging::configure_logging;
-use redis_client::RedisPubAsync;
+use redis_client_lib::RedisPubAsync;
 
 use api::app;
 

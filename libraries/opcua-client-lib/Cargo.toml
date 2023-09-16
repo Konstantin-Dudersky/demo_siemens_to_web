@@ -9,4 +9,4 @@ chrono = { workspace = true }
 opcua = { workspace = true }
 tracing = { workspace = true }
 
-redis-client = { workspace = true }
+redis-client-lib = { workspace = true }

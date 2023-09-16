@@ -2,7 +2,7 @@ use std::io::Error as StdIoError;
 use tokio_tungstenite::tungstenite::Error as WsError;
 
 // use messages::Errors as MessagesError;
-use redis_client::Errors as RedisErrors;
+use redis_client_lib::Errors as RedisErrors;
 
 #[derive(Debug)]
 pub enum Errors {

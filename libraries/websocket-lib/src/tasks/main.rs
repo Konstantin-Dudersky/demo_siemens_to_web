@@ -4,7 +4,7 @@ use serde::{de::DeserializeOwned, Serialize};
 use tokio::{spawn, sync::mpsc, try_join};
 use tokio_util::sync::CancellationToken;
 
-use redis_client::start_redis_subscription_async;
+use redis_client_lib::start_redis_subscription_async;
 use url::Url;
 
 use crate::{cancellable_task, flatten_task_result, Errors};

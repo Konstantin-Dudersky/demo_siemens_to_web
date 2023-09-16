@@ -4,7 +4,7 @@ use axum_test::TestServer;
 use serde_json::to_string as serialize;
 use url::Url;
 
-use redis_client::RedisPubAsync;
+use redis_client_lib::RedisPubAsync;
 
 use api::app;
 

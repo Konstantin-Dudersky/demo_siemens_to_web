@@ -14,4 +14,4 @@ env_vars = { workspace = true }
 logging = { workspace = true }
 messages = { workspace = true }
 opcua-client-lib = { workspace = true }
-redis-client = { workspace = true }
+redis-client-lib = { workspace = true }

@@ -1,5 +1,6 @@
 use leptos::*;
 
+// TODO - доделать цвета состояний
 #[component]
 pub fn State(
     text: Signal<String>,
@@ -16,6 +17,12 @@ pub fn State(
 
         class=("bg-green-50", state_active)
         class=("text-green-700", state_active)
+
+        class=("bg-green-50", state_warning)
+        class=("text-green-700", state_warning)
+
+        class=("bg-green-50", state_error)
+        class=("text-green-700", state_error)
         >
             { text }
         </span>

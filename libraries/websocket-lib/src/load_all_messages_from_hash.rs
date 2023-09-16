@@ -1,7 +1,7 @@
 use serde::de::DeserializeOwned;
 use url::Url;
 
-use redis_client::RedisPubAsync;
+use redis_client_lib::RedisPubAsync;
 
 use crate::Errors;
 

@@ -8,7 +8,7 @@ use std::str::FromStr;
 use tokio::{join, main, spawn, sync::mpsc};
 use url::Url;
 
-use redis_client::start_redis_subscription_async;
+use redis_client_lib::start_redis_subscription_async;
 
 #[main]
 async fn main() {

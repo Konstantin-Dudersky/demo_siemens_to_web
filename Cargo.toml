@@ -2,7 +2,7 @@
 members = [
     "libraries/db-saver-lib",
     "libraries/opcua-client-lib",
-    "libraries/redis-client",
+    "libraries/redis-client-lib",
     "libraries/webapp-lib",
     "libraries/websocket-lib",
     "services/api",
@@ -60,7 +60,7 @@ url = { version = "2.4", features = ["serde"] }
 # мои пакеты
 db-saver-lib = { path = "./libraries/db-saver-lib" }
 opcua-client-lib = { path = "./libraries/opcua-client-lib" }
-redis-client = { path = "./libraries/redis-client" }
+redis-client-lib = { path = "./libraries/redis-client-lib" }
 webapp-lib = { path = "./libraries/webapp-lib" }
 websocket-lib = { path = "./libraries/websocket-lib" }
 env_vars = { path = "./utils/env_vars" }

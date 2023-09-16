@@ -14,4 +14,4 @@ tokio-tungstenite = { workspace = true }
 tracing = { workspace = true }
 url = { workspace = true }
 
-redis-client = { workspace = true }
+redis-client-lib = { workspace = true }

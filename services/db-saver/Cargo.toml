@@ -11,5 +11,5 @@ tokio = { workspace = true }
 env_vars = { workspace = true }
 logging = { workspace = true }
 messages = { workspace = true }
-redis-client = { workspace = true }
+redis-client-lib = { workspace = true }
 db-saver-lib = { workspace = true }

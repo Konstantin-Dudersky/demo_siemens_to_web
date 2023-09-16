@@ -6,7 +6,7 @@ use db_saver_lib::save_row_in_db;
 use env_vars;
 use logging::configure_logging;
 use messages::Messages;
-use redis_client::start_redis_subscription_async;
+use redis_client_lib::start_redis_subscription_async;
 
 mod config;
 
