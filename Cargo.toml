@@ -39,7 +39,8 @@ tokio-tungstenite = { version = "0.20" }
 
 # wasm
 gloo = { version = "0.10", features = ["console", "net", "utils"] }
-leptos = { version = "0.5.0-rc1", features = ["csr", "tracing"] }
+leptos = { version = "0.5.0-rc2", features = ["csr", "tracing"] }
+leptos_router = { version = "0.5.0-rc2", features = ["csr"] }
 web-sys = { version = "0.3", features = ["Location", "Window"] }
 
 # логгирование

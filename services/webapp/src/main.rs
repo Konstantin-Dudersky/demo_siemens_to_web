@@ -1,4 +1,5 @@
 use leptos::*;
+use leptos_router::*;
 
 use messages::{self, types, Messages};
 use webapp_lib::{
@@ -6,7 +7,9 @@ use webapp_lib::{
     define_window_url, handle_ws_connection,
 };
 
-use webapp::{api, process_ws_message, GlobalState};
+use webapp::{
+    api, process_ws_message, ApplicationShell, GlobalNavigation, GlobalState,
+};
 
 #[component]
 fn App() -> impl IntoView {
@@ -83,6 +86,13 @@ fn App() -> impl IntoView {
     }
 }
 
+#[component]
+fn App2() -> impl IntoView {
+    view! {
+        <i class="fa-solid fa-user"></i>
+    }
+}
+
 pub fn main() {
     provide_context(GlobalState::new());
     let global_state = use_context::<GlobalState>().expect("no global state");
@@ -108,5 +118,19 @@ pub fn main() {
         handle_ws_connection(&ws_url, process_ws_message).await;
     });
 
-    mount_to_body(|| view! { <App/> })
+    mount_to_body(|| {
+        view! {
+            <Router>
+                <ApplicationShell
+                    navigation=GlobalNavigation
+                    content=|| view!(
+                        <Routes>
+                            <Route path="/" view=App/>
+                            <Route path="/app2" view=App2/>
+                        </Routes>
+                    )
+                />
+            </Router>
+        }
+    })
 }

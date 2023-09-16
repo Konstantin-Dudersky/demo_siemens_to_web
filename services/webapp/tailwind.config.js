@@ -1,7 +1,11 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content:  { 
-        files: ["*.html", "./src/**/*.rs"],
+        files: [
+          "*.html", 
+          "./src/**/*.rs", 
+          "../../libraries/webapp-lib/*.html", 
+          "../../libraries/webapp-lib/src/**/*.rs",],
       },
     presets: [],
     darkMode: 'media', // or 'class'
@@ -304,6 +308,7 @@ module.exports = {
       },
       fontFamily: {
         sans: [
+          'Inter var',
           'ui-sans-serif',
           'system-ui',
           'sans-serif',
