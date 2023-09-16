@@ -51,7 +51,7 @@
 
 [Пример конфигурации](../services/webapp/src/main.rs).
 
-Используется фреймворк [Leptos](https://leptos.dev/). Кастомизация внешнего вида - [Tailwind](https://tailwindui.com/).
+Используется фреймворк [Leptos](https://leptos.dev/). Кастомизация внешнего вида - [Tailwind](https://tailwindui.com/). Значки - [Font Awesome](https://fontawesome.com/search?o=r&m=free).
 
 ### db-saver
 

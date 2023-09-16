@@ -89,7 +89,7 @@ fn App() -> impl IntoView {
 #[component]
 fn App2() -> impl IntoView {
     view! {
-        <i class="fa-solid fa-user"></i>
+        <i class="fa-brands fa-github-square"></i>
     }
 }
 

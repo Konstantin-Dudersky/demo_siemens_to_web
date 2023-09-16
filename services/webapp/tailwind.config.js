@@ -3,7 +3,7 @@ module.exports = {
     content:  { 
         files: [
           "*.html", 
-          "./src/**/*.rs", 
+          "./src/**/*.rs", "./src/**/*.html",
           "../../libraries/webapp-lib/*.html", 
           "../../libraries/webapp-lib/src/**/*.rs",],
       },
